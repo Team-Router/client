@@ -1,10 +1,10 @@
 import KaKaoMap from '@/components/KaKaoMap';
-import PointModal from '@/components/PointModal';
+import PointInput from '@/components/PointInput';
 
 export default function Home() {
   return (
     <>
-      <PointModal />
+      <PointInput />
       <KaKaoMap />
     </>
   );

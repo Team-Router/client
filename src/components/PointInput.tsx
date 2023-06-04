@@ -2,7 +2,7 @@
 
 import { Box, TextField } from '@mui/material';
 
-export default function PointModal() {
+export default function PointInput() {
   return (
     <Box
       sx={{
