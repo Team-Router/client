@@ -2,7 +2,7 @@
 
 import { Box, TextField } from '@mui/material';
 
-export default function PointInput() {
+export default function PointInput({ startPoint }: { startPoint: string }) {
   return (
     <Box
       sx={{
@@ -15,7 +15,7 @@ export default function PointInput() {
       <TextField
         fullWidth
         label="출발지"
-        defaultValue="출발지 간단 도로명주소"
+        defaultValue={startPoint ? startPoint : '출발지 간단 도로명주소'}
         variant="filled"
         size="small"
       />

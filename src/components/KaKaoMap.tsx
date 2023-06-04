@@ -4,7 +4,11 @@ import React, { useEffect, useState } from 'react';
 
 import { displayMarker } from '@/utils/displayMarker';
 
-export default function KaKaoMap() {
+interface KaKaoMapProps {
+  setStartPoint: React.Dispatch<React.SetStateAction<string>>;
+}
+
+export default function KaKaoMap({ setStartPoint }: KaKaoMapProps) {
   const [mapLoaded, setMapLoaded] = useState(false);
 
   useEffect(() => {
@@ -42,7 +46,7 @@ export default function KaKaoMap() {
             status: kakao.maps.services.Status
           ) => {
             if (status === kakao.maps.services.Status.OK) {
-              console.log(result[0].address.address_name);
+              setStartPoint(result[0].address.address_name);
             } else {
               console.log('현재 위치의 주소를 가져올 수 없습니다.');
             }
