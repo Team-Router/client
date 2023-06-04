@@ -55,8 +55,8 @@ export default function KaKaoMap() {
           );
         });
       } else {
-        const locPosition = new kakao.maps.LatLng(33.450701, 126.570667),
-          message = 'geolocation을 사용할수 없어요..';
+        const locPosition = new kakao.maps.LatLng(33.450701, 126.570667);
+        const message = 'geolocation을 사용할수 없어요..';
 
         displayMarker(map, locPosition, message);
       }
