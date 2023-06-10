@@ -1,7 +1,8 @@
 'use client';
 
 import { useAtom } from 'jotai';
-import React, { useEffect } from 'react';
+import Script from 'next/script';
+import React, { useEffect, useRef } from 'react';
 
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { useKakaoMap } from '@/hooks/useKakaoMap';
@@ -13,21 +14,10 @@ interface KaKaoMapProps {
 
 export default function KaKaoMap({ setStartPoint }: KaKaoMapProps) {
   const [map, setMap] = useAtom(mapAtom);
+  const mapRef = useRef<HTMLDivElement>(null);
 
   const { displayMarker, displayInfoWindow } = useKakaoMap();
   const { lat, lon, initPosition } = useGeolocation();
-
-  useEffect(() => {
-    kakao.maps.load(() => {
-      const container = document.getElementById('map') as HTMLElement;
-      initPosition();
-      const options = {
-        center: new kakao.maps.LatLng(lat, lon),
-        level: 3,
-      };
-      setMap(new kakao.maps.Map(container, options));
-    });
-  }, [lat, lon, setMap, initPosition]);
 
   useEffect(() => {
     displayMarker(lat, lon);
@@ -46,12 +36,30 @@ export default function KaKaoMap({ setStartPoint }: KaKaoMapProps) {
   }, [map, displayInfoWindow]);
 
   return (
-    <div
-      id="map"
-      style={{
-        width: '100%',
-        height: '87%',
-      }}
-    ></div>
+    <>
+      <div
+        ref={mapRef}
+        id="kakao-map"
+        style={{
+          width: '100%',
+          height: '87%',
+        }}
+      ></div>
+      <Script
+        src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_JAVASCRIPT_KEY}&libraries=services&autoload=false`}
+        onReady={() => {
+          kakao.maps.load(() => {
+            initPosition();
+            const options = {
+              center: new kakao.maps.LatLng(lat, lon),
+              level: 3,
+            };
+            setMap(
+              new kakao.maps.Map(mapRef.current as HTMLDivElement, options)
+            );
+          });
+        }}
+      />
+    </>
   );
 }
