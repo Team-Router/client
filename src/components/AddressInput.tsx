@@ -2,7 +2,11 @@
 
 import { Box, TextField } from '@mui/material';
 
-export default function PointInput({ startPoint }: { startPoint: string }) {
+import { useKakaoMap } from '@/hooks/useKakaoMap';
+
+export default function PointInput() {
+  const { startAddress, endAddress } = useKakaoMap();
+
   return (
     <Box
       sx={{
@@ -15,14 +19,14 @@ export default function PointInput({ startPoint }: { startPoint: string }) {
       <TextField
         fullWidth
         label="출발지"
-        defaultValue={startPoint ? startPoint : '출발지 간단 도로명주소'}
+        defaultValue={startAddress ? startAddress : '출발지 간단 도로명주소'}
         variant="filled"
         size="small"
       />
       <TextField
         fullWidth
         label="도착지"
-        defaultValue="도착지 간단 도로명주소"
+        defaultValue={endAddress ? endAddress : '도착지 간단 도로명주소'}
         variant="filled"
         size="small"
       />
