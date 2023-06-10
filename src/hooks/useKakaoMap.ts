@@ -1,39 +1,101 @@
 import { useAtomValue } from 'jotai';
+import { useRef, useState } from 'react';
 
 import { mapAtom } from '@/store/atom';
+import { getInfoWindowElement } from '@/utils/infoWindowElement';
+
+type pointType = 'start' | 'end';
 
 export function useKakaoMap() {
   const map = useAtomValue(mapAtom);
+  const [startAddress, setStartAddress] = useState('');
+  const [endAddress, setEndAddress] = useState('');
+  const startMarker = useRef<kakao.maps.Marker>();
+  const endMarker = useRef<kakao.maps.Marker>();
+  const infoWindow = useRef<kakao.maps.InfoWindow | null>();
 
   const getPosition = (lat: number, lon: number) => {
     return new kakao.maps.LatLng(lat, lon);
   };
 
-  const displayMarker = (lat: number, lon: number) => {
+  const displayMarker = (lat: number, lon: number, pointType: pointType) => {
     if (!map) {
       return;
     }
 
     const locPosition = getPosition(lat, lon);
-    new kakao.maps.Marker({
+    const marker = new kakao.maps.Marker({
       map: map,
       position: locPosition,
     });
-    map.setCenter(locPosition);
+    if (pointType === 'start') {
+      startMarker.current && startMarker.current.setMap(null);
+      startMarker.current = marker;
+    }
+    if (pointType === 'end') {
+      endMarker.current && endMarker.current.setMap(null);
+      endMarker.current = marker;
+    }
+
+    map.panTo(locPosition);
+  };
+
+  const closeInfoWindow = () => {
+    if (infoWindow.current) {
+      infoWindow.current.close();
+    }
   };
 
   const displayInfoWindow = (lat: number, lon: number) => {
     if (!map) {
       return;
     }
-    const iwContent = '<div style="padding:5px;">Hello World!</div>';
+
+    closeInfoWindow();
+
+    const makeHandler = (pointType: pointType) => {
+      return () => {
+        changeAddress(lat, lon, pointType);
+        displayMarker(lat, lon, pointType);
+        closeInfoWindow();
+      };
+    };
+
+    const iwContent = getInfoWindowElement(
+      makeHandler('start'),
+      makeHandler('end')
+    );
     const iwPosition = getPosition(lat, lon);
-    const infowindow = new kakao.maps.InfoWindow({
+    const newInfowindow = new kakao.maps.InfoWindow({
       map: map,
       position: iwPosition,
       content: iwContent,
     });
+    infoWindow.current = newInfowindow;
   };
 
-  return { getPosition, displayMarker, displayInfoWindow };
+  const changeAddress = (lat: number, lon: number, pointType: pointType) => {
+    const geocoder = new kakao.maps.services.Geocoder();
+    const callback = (result: any, status: kakao.maps.services.Status) => {
+      if (status === kakao.maps.services.Status.OK) {
+        const address = result[0].address.address_name;
+        console.log(address);
+        pointType === 'start' && setStartAddress(address);
+        pointType === 'end' && setEndAddress(address);
+      } else {
+        alert('현재 위치의 주소를 가져올 수 없습니다.');
+      }
+    };
+
+    geocoder.coord2Address(lon, lat, callback);
+  };
+
+  return {
+    startAddress,
+    endAddress,
+    getPosition,
+    displayMarker,
+    displayInfoWindow,
+    closeInfoWindow,
+  };
 }
