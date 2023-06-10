@@ -1,71 +1,49 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useAtom } from 'jotai';
+import React, { useEffect } from 'react';
 
-import { displayMarker } from '@/utils/displayMarker';
+import { useGeolocation } from '@/hooks/useGeolocation';
+import { useKakaoMap } from '@/hooks/useKakaoMap';
+import { mapAtom } from '@/store/atom';
 
 interface KaKaoMapProps {
   setStartPoint: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export default function KaKaoMap({ setStartPoint }: KaKaoMapProps) {
-  const [mapLoaded, setMapLoaded] = useState(false);
+  const [map, setMap] = useAtom(mapAtom);
+
+  const { displayMarker, displayInfoWindow } = useKakaoMap();
+  const { lat, lon, initPosition } = useGeolocation();
 
   useEffect(() => {
-    const $script = document.createElement('script');
-    $script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_JAVASCRIPT_KEY}&autoload=false&libraries=services`;
-    $script.addEventListener('load', () => setMapLoaded(true));
-    document.head.appendChild($script);
-  }, []);
-
-  useEffect(() => {
-    if (!mapLoaded) return;
-
     kakao.maps.load(() => {
       const container = document.getElementById('map') as HTMLElement;
+      initPosition();
       const options = {
-        center: new kakao.maps.LatLng(33.450701, 126.570667),
+        center: new kakao.maps.LatLng(lat, lon),
         level: 3,
       };
-
-      const map = new kakao.maps.Map(container, options);
-      const geocoder = new kakao.maps.services.Geocoder();
-
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((position) => {
-          const lat = position.coords.latitude;
-          const lon = position.coords.longitude;
-
-          const locPosition = new kakao.maps.LatLng(lat, lon);
-          const message = '<div styled="padding:5px">출발</div>';
-
-          displayMarker(map, locPosition, message);
-
-          const callback = (
-            result: { [key: string]: any },
-            status: kakao.maps.services.Status
-          ) => {
-            if (status === kakao.maps.services.Status.OK) {
-              setStartPoint(result[0].address.address_name);
-            } else {
-              console.log('현재 위치의 주소를 가져올 수 없습니다.');
-            }
-          };
-
-          geocoder.coord2Address(
-            locPosition.getLng(),
-            locPosition.getLat(),
-            callback
-          );
-        });
-      } else {
-        const locPosition = new kakao.maps.LatLng(33.450701, 126.570667);
-        const message = 'geolocation을 사용할수 없어요..';
-
-        displayMarker(map, locPosition, message);
-      }
+      setMap(new kakao.maps.Map(container, options));
     });
-  }, [mapLoaded]);
+  }, [lat, lon, setMap, initPosition]);
+
+  useEffect(() => {
+    displayMarker(lat, lon);
+  }, [lat, lon, map, displayMarker]);
+
+  useEffect(() => {
+    map &&
+      kakao.maps.event.addListener(
+        map,
+        'click',
+        function (mouseEvent: kakao.maps.event.MouseEvent) {
+          const latlng = mouseEvent.latLng;
+          displayInfoWindow(latlng.getLat(), latlng.getLng());
+        }
+      );
+  }, [map, displayInfoWindow]);
 
   return (
     <div
