@@ -1,11 +1,12 @@
 'use client';
 
 import { Box, TextField } from '@mui/material';
+import { useAtomValue } from 'jotai';
 
-import { useKakaoMap } from '@/hooks/useKakaoMap';
+import { addressAtom } from '@/store/atom';
 
 export default function PointInput() {
-  const { startAddress, endAddress } = useKakaoMap();
+  const address = useAtomValue(addressAtom);
 
   return (
     <Box
@@ -17,18 +18,14 @@ export default function PointInput() {
       }}
     >
       <TextField
-        fullWidth
-        label="출발지"
-        defaultValue={startAddress ? startAddress : '출발지 간단 도로명주소'}
-        variant="filled"
         size="small"
+        fullWidth
+        defaultValue={address.start || '출발지'}
       />
       <TextField
-        fullWidth
-        label="도착지"
-        defaultValue={endAddress ? endAddress : '도착지 간단 도로명주소'}
-        variant="filled"
         size="small"
+        fullWidth
+        defaultValue={address.end || '도착지'}
       />
     </Box>
   );

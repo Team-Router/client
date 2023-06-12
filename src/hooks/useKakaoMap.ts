@@ -1,15 +1,14 @@
-import { useAtomValue } from 'jotai';
-import { useCallback, useRef, useState } from 'react';
+import { useAtom, useAtomValue } from 'jotai';
+import { useCallback, useRef } from 'react';
 
-import { mapAtom } from '@/store/atom';
+import { addressAtom, mapAtom } from '@/store/atom';
 import { getInfoWindowElement } from '@/utils/infoWindowElement';
 
 type pointType = 'start' | 'end';
 
 export function useKakaoMap() {
   const map = useAtomValue(mapAtom);
-  const [startAddress, setStartAddress] = useState('');
-  const [endAddress, setEndAddress] = useState('');
+  const [address, setAddress] = useAtom(addressAtom);
   const startMarker = useRef<kakao.maps.Marker>();
   const endMarker = useRef<kakao.maps.Marker>();
   const infoWindow = useRef<kakao.maps.InfoWindow | null>();
@@ -81,9 +80,9 @@ export function useKakaoMap() {
     const geocoder = new kakao.maps.services.Geocoder();
     const callback = (result: any, status: kakao.maps.services.Status) => {
       if (status === kakao.maps.services.Status.OK) {
-        const address = result[0].address.address_name;
-        pointType === 'start' && setStartAddress(address);
-        pointType === 'end' && setEndAddress(address);
+        const newAddress = result[0].address.address_name;
+        pointType === 'start' && setAddress({ ...address, start: newAddress });
+        pointType === 'end' && setAddress({ ...address, end: newAddress });
       } else {
         alert('현재 위치의 주소를 가져올 수 없습니다.');
       }
@@ -93,8 +92,6 @@ export function useKakaoMap() {
   };
 
   return {
-    startAddress,
-    endAddress,
     getPosition,
     displayMarker,
     displayInfoWindow,
