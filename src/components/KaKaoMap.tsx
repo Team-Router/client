@@ -17,7 +17,7 @@ export default function KakaoMap() {
 
   useEffect(() => {
     displayMarker(lat, lon, 'start');
-  }, [lat, lon, map, displayMarker]);
+  }, [lat, lon, displayMarker]);
 
   useEffect(() => {
     if (!map) {

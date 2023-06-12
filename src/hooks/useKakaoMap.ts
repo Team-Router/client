@@ -1,5 +1,5 @@
 import { useAtomValue } from 'jotai';
-import { useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 import { mapAtom } from '@/store/atom';
 import { getInfoWindowElement } from '@/utils/infoWindowElement';
@@ -18,27 +18,30 @@ export function useKakaoMap() {
     return new kakao.maps.LatLng(lat, lon);
   };
 
-  const displayMarker = (lat: number, lon: number, pointType: pointType) => {
-    if (!map) {
-      return;
-    }
+  const displayMarker = useCallback(
+    (lat: number, lon: number, pointType: pointType) => {
+      if (!map) {
+        return;
+      }
 
-    const locPosition = getPosition(lat, lon);
-    const marker = new kakao.maps.Marker({
-      map: map,
-      position: locPosition,
-    });
-    if (pointType === 'start') {
-      startMarker.current && startMarker.current.setMap(null);
-      startMarker.current = marker;
-    }
-    if (pointType === 'end') {
-      endMarker.current && endMarker.current.setMap(null);
-      endMarker.current = marker;
-    }
+      const locPosition = getPosition(lat, lon);
+      const marker = new kakao.maps.Marker({
+        map: map,
+        position: locPosition,
+      });
+      if (pointType === 'start') {
+        startMarker.current && startMarker.current.setMap(null);
+        startMarker.current = marker;
+      }
+      if (pointType === 'end') {
+        endMarker.current && endMarker.current.setMap(null);
+        endMarker.current = marker;
+      }
 
-    map.panTo(locPosition);
-  };
+      map.panTo(locPosition);
+    },
+    [map]
+  );
 
   const closeInfoWindow = () => {
     if (infoWindow.current) {
@@ -79,7 +82,6 @@ export function useKakaoMap() {
     const callback = (result: any, status: kakao.maps.services.Status) => {
       if (status === kakao.maps.services.Status.OK) {
         const address = result[0].address.address_name;
-        console.log(address);
         pointType === 'start' && setStartAddress(address);
         pointType === 'end' && setEndAddress(address);
       } else {
