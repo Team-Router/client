@@ -8,32 +8,34 @@ import { useGeolocation } from '@/hooks/useGeolocation';
 import { useKakaoMap } from '@/hooks/useKakaoMap';
 import { mapAtom } from '@/store/atom';
 
-interface KaKaoMapProps {
-  setStartPoint: React.Dispatch<React.SetStateAction<string>>;
-}
-
-export default function KaKaoMap({ setStartPoint }: KaKaoMapProps) {
+export default function KakaoMap() {
   const [map, setMap] = useAtom(mapAtom);
   const mapRef = useRef<HTMLDivElement>(null);
 
-  const { displayMarker, displayInfoWindow } = useKakaoMap();
+  const { displayMarker, displayInfoWindow, closeInfoWindow } = useKakaoMap();
   const { lat, lon, initPosition } = useGeolocation();
 
   useEffect(() => {
-    displayMarker(lat, lon);
-  }, [lat, lon, map, displayMarker]);
+    displayMarker(lat, lon, 'start');
+  }, [lat, lon, displayMarker]);
 
   useEffect(() => {
-    map &&
-      kakao.maps.event.addListener(
-        map,
-        'click',
-        function (mouseEvent: kakao.maps.event.MouseEvent) {
-          const latlng = mouseEvent.latLng;
-          displayInfoWindow(latlng.getLat(), latlng.getLng());
-        }
-      );
-  }, [map, displayInfoWindow]);
+    if (!map) {
+      return;
+    }
+
+    const onClickMap = (mouseEvent: kakao.maps.event.MouseEvent) => {
+      const latlng = mouseEvent.latLng;
+      displayInfoWindow(latlng.getLat(), latlng.getLng());
+    };
+
+    kakao.maps.event.addListener(map, 'click', onClickMap);
+    kakao.maps.event.addListener(map, 'dragend', closeInfoWindow);
+    return () => {
+      kakao.maps.event.removeListener(map, 'click', onClickMap);
+      kakao.maps.event.removeListener(map, 'dragend', closeInfoWindow);
+    };
+  }, [map, displayInfoWindow, closeInfoWindow]);
 
   return (
     <>
