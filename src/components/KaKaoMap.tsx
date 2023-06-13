@@ -24,15 +24,15 @@ export default function KakaoMap() {
       return;
     }
 
-    const handler = (mouseEvent: kakao.maps.event.MouseEvent) => {
+    const onClickMap = (mouseEvent: kakao.maps.event.MouseEvent) => {
       const latlng = mouseEvent.latLng;
       displayInfoWindow(latlng.getLat(), latlng.getLng());
     };
 
-    kakao.maps.event.addListener(map, 'click', handler);
+    kakao.maps.event.addListener(map, 'click', onClickMap);
     kakao.maps.event.addListener(map, 'dragend', closeInfoWindow);
     return () => {
-      kakao.maps.event.removeListener(map, 'click', handler);
+      kakao.maps.event.removeListener(map, 'click', onClickMap);
       kakao.maps.event.removeListener(map, 'dragend', closeInfoWindow);
     };
   }, [map, displayInfoWindow, closeInfoWindow]);

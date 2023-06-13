@@ -96,5 +96,6 @@ export function useKakaoMap() {
     displayMarker,
     displayInfoWindow,
     closeInfoWindow,
+    changeAddress,
   };
 }
