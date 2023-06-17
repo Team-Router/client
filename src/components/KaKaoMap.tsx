@@ -1,23 +1,26 @@
 'use client';
 
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import Script from 'next/script';
-import React, { useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 
+import { postDirectionAPI } from '@/api/direction';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { useKakaoMap } from '@/hooks/useKakaoMap';
-import { mapAtom } from '@/store/atom';
+import { addressAtom, locationAtom, mapAtom } from '@/store/atom';
 
 export default function KakaoMap() {
+  const address = useAtomValue(addressAtom);
+  const location = useAtomValue(locationAtom);
   const [map, setMap] = useAtom(mapAtom);
   const mapRef = useRef<HTMLDivElement>(null);
 
   const { displayMarker, displayInfoWindow, closeInfoWindow } = useKakaoMap();
-  const { lat, lon, initPosition } = useGeolocation();
+  const { initPosition } = useGeolocation();
 
   useEffect(() => {
-    displayMarker(lat, lon, 'start');
-  }, [lat, lon, displayMarker]);
+    displayMarker(location.startLatitude, location.startLongitude, 'start');
+  }, [location, displayMarker]);
 
   useEffect(() => {
     if (!map) {
@@ -37,6 +40,17 @@ export default function KakaoMap() {
     };
   }, [map, displayInfoWindow, closeInfoWindow]);
 
+  const postDirection = useCallback(async () => {
+    const response = await postDirectionAPI(location);
+    console.log(response);
+  }, [location]);
+
+  useEffect(() => {
+    if (address.start && address.end) {
+      postDirection();
+    }
+  }, [address, postDirection]);
+
   return (
     <>
       <div
@@ -53,7 +67,10 @@ export default function KakaoMap() {
           kakao.maps.load(() => {
             initPosition();
             const options = {
-              center: new kakao.maps.LatLng(lat, lon),
+              center: new kakao.maps.LatLng(
+                location.startLatitude,
+                location.startLongitude
+              ),
               level: 3,
             };
             setMap(
