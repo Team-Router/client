@@ -12,16 +12,13 @@ export function useGeolocation() {
   const initPosition = useCallback(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
+        const { latitude, longitude } = position.coords;
         setLocation({
           ...location,
-          startLatitude: position.coords.latitude,
-          startLongitude: position.coords.longitude,
+          startLatitude: latitude,
+          startLongitude: longitude,
         });
-        changeAddress(
-          position.coords.latitude,
-          position.coords.longitude,
-          'start'
-        );
+        changeAddress(latitude, longitude, 'start');
       });
     } else {
       alert('현위치를 알 수 없습니다.');

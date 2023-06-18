@@ -4,7 +4,7 @@ import { useAtom, useAtomValue } from 'jotai';
 import Script from 'next/script';
 import React, { useCallback, useEffect, useRef } from 'react';
 
-import { postDirectionAPI } from '@/api/direction';
+import { getDirectionBySelectedLocation } from '@/api/direction';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { useKakaoMap } from '@/hooks/useKakaoMap';
 import { addressAtom, locationAtom, mapAtom } from '@/store/atom';
@@ -41,7 +41,7 @@ export default function KakaoMap() {
   }, [map, displayInfoWindow, closeInfoWindow]);
 
   const postDirection = useCallback(async () => {
-    const response = await postDirectionAPI(location);
+    const response = await getDirectionBySelectedLocation(location);
     console.log(response);
   }, [location]);
 
