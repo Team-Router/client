@@ -21,11 +21,13 @@ export default function PointInput() {
         size="small"
         fullWidth
         defaultValue={address.start || '출발지'}
+        disabled
       />
       <TextField
         size="small"
         fullWidth
         defaultValue={address.end || '도착지'}
+        disabled
       />
     </Box>
   );

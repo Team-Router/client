@@ -1,7 +1,7 @@
 import { useAtom, useAtomValue } from 'jotai';
 import { useCallback, useRef } from 'react';
 
-import { addressAtom, mapAtom } from '@/store/atom';
+import { addressAtom, locationAtom, mapAtom } from '@/store/atom';
 import { getInfoWindowElement } from '@/utils/infoWindowElement';
 
 type pointType = 'start' | 'end';
@@ -9,6 +9,7 @@ type pointType = 'start' | 'end';
 export function useKakaoMap() {
   const map = useAtomValue(mapAtom);
   const [address, setAddress] = useAtom(addressAtom);
+  const [location, setLocation] = useAtom(locationAtom);
   const startMarker = useRef<kakao.maps.Marker>();
   const endMarker = useRef<kakao.maps.Marker>();
   const infoWindow = useRef<kakao.maps.InfoWindow | null>();
@@ -29,11 +30,11 @@ export function useKakaoMap() {
         position: locPosition,
       });
       if (pointType === 'start') {
-        startMarker.current && startMarker.current.setMap(null);
+        startMarker.current?.setMap(null);
         startMarker.current = marker;
       }
       if (pointType === 'end') {
-        endMarker.current && endMarker.current.setMap(null);
+        endMarker.current?.setMap(null);
         endMarker.current = marker;
       }
 
@@ -60,6 +61,10 @@ export function useKakaoMap() {
         changeAddress(lat, lon, pointType);
         displayMarker(lat, lon, pointType);
         closeInfoWindow();
+        pointType === 'start' &&
+          setLocation({ ...location, startLatitude: lat, startLongitude: lon });
+        pointType === 'end' &&
+          setLocation({ ...location, endLatitude: lat, endLongitude: lon });
       };
     };
 
