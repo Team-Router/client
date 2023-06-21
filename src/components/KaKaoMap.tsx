@@ -2,12 +2,14 @@
 
 import { useAtom, useAtomValue } from 'jotai';
 import Script from 'next/script';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { getDirectionBySelectedLocation } from '@/api/direction';
+import { PEDESTRIAN, SUCCESS } from '@/constants';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { useKakaoMap } from '@/hooks/useKakaoMap';
 import { addressAtom, locationAtom, mapAtom } from '@/store/atom';
+import { Location, RoutingProfile } from '@/types/direction';
 
 export default function KakaoMap() {
   const address = useAtomValue(addressAtom);
@@ -15,7 +17,8 @@ export default function KakaoMap() {
   const [map, setMap] = useAtom(mapAtom);
   const mapRef = useRef<HTMLDivElement>(null);
 
-  const { displayMarker, displayInfoWindow, closeInfoWindow } = useKakaoMap();
+  const { displayMarker, displayInfoWindow, closeInfoWindow, getPosition } =
+    useKakaoMap();
   const { initPosition } = useGeolocation();
 
   useEffect(() => {
@@ -41,8 +44,14 @@ export default function KakaoMap() {
   }, [map, displayInfoWindow, closeInfoWindow]);
 
   const postDirection = useCallback(async () => {
-    const response = await getDirectionBySelectedLocation(location);
-    console.log(response);
+    const { data, result } = await getDirectionBySelectedLocation(location);
+
+    if (result === SUCCESS) {
+      data.forEach(({ locations, routingProfile }) => {
+        const polyline = getPolylineOfDirection(locations, routingProfile);
+        polyline.setMap(map);
+      });
+    }
   }, [location]);
 
   useEffect(() => {
@@ -50,6 +59,20 @@ export default function KakaoMap() {
       postDirection();
     }
   }, [address, postDirection]);
+
+  const getPolylineOfDirection = useCallback(
+    (locations: Location[], routingProfile: RoutingProfile) => {
+      return new kakao.maps.Polyline({
+        path: locations.map(({ latitude, longitude }) =>
+          getPosition(latitude, longitude)
+        ),
+        strokeWeight: 5,
+        strokeColor: routingProfile === PEDESTRIAN ? '#4285f4' : '#f44270',
+        strokeOpacity: 1,
+      });
+    },
+    [getPosition]
+  );
 
   return (
     <>
