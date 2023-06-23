@@ -9,6 +9,20 @@ interface PostDirectionParam {
   endLongitude: number;
 }
 
-export const getDirectionBySelectedLocation = (param: PostDirectionParam) => {
-  return postFetch('/route/cycle', param) as Promise<PostDirectionResponse>;
+export const getDirectionBySelectedLocation = ({
+  startLatitude,
+  startLongitude,
+  endLatitude,
+  endLongitude,
+}: PostDirectionParam) => {
+  return postFetch('/route/cycle', {
+    startLocation: {
+      latitude: startLatitude,
+      longitude: startLongitude,
+    },
+    endLocation: {
+      latitude: endLatitude,
+      longitude: endLongitude,
+    },
+  }) as Promise<PostDirectionResponse>;
 };
