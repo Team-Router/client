@@ -12,6 +12,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
+      <head>
+        <meta
+          http-equiv="Content-Security-Policy"
+          content="upgrade-insecure-requests"
+        ></meta>
+      </head>
       <body>
         <main id="root-layout">{children}</main>
       </body>
