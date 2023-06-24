@@ -2,20 +2,23 @@
 
 import { useAtom, useAtomValue } from 'jotai';
 import Script from 'next/script';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 
 import { getDirectionBySelectedLocation } from '@/api/direction';
 import { PEDESTRIAN, SUCCESS } from '@/constants';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { useKakaoMap } from '@/hooks/useKakaoMap';
 import { addressAtom, locationAtom, mapAtom } from '@/store/atom';
-import { Location, RoutingProfile } from '@/types/direction';
+import type { Location, RoutingProfile } from '@/types/direction';
+import { getResultOverlayElement } from '@/utils/getElement';
 
 export default function KakaoMap() {
   const address = useAtomValue(addressAtom);
   const location = useAtomValue(locationAtom);
   const [map, setMap] = useAtom(mapAtom);
   const mapRef = useRef<HTMLDivElement>(null);
+  const polylines = useRef<kakao.maps.Polyline[]>([]);
+  const resultOverlays = useRef<kakao.maps.CustomOverlay[]>([]);
 
   const { displayMarker, displayInfoWindow, closeInfoWindow, getPosition } =
     useKakaoMap();
@@ -47,15 +50,50 @@ export default function KakaoMap() {
     const { data, result } = await getDirectionBySelectedLocation(location);
 
     if (result === SUCCESS) {
-      data.forEach(({ locations, routingProfile }) => {
+      data.forEach(({ locations, routingProfile, distance, duration }) => {
         const polyline = getPolylineOfDirection(locations, routingProfile);
         polyline.setMap(map);
+        polylines.current?.push(polyline);
+        displayResultOverlay(
+          locations[locations.length - 1].latitude,
+          locations[locations.length - 1].longitude,
+          distance,
+          duration,
+          routingProfile
+        );
       });
     }
   }, [location]);
 
+  const clearPolylines = () => {
+    polylines.current?.forEach((polyline) => polyline.setMap(null));
+    polylines.current = [];
+  };
+
+  const displayResultOverlay = (
+    latitude: number,
+    longitude: number,
+    distance: number,
+    duration: number,
+    routingProfile: RoutingProfile
+  ) => {
+    const resultOverlay = new kakao.maps.CustomOverlay({
+      position: new kakao.maps.LatLng(latitude, longitude),
+      content: getResultOverlayElement(distance, duration, routingProfile),
+    });
+    resultOverlay.setMap(map);
+    resultOverlays.current.push(resultOverlay);
+  };
+
+  const clearResultOverlays = () => {
+    resultOverlays.current.forEach((overlay) => overlay.setMap(null));
+    resultOverlays.current = [];
+  };
+
   useEffect(() => {
     if (address.start && address.end) {
+      clearPolylines();
+      clearResultOverlays();
       postDirection();
     }
   }, [address, postDirection]);

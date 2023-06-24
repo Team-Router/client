@@ -2,7 +2,7 @@ import { useAtom, useAtomValue } from 'jotai';
 import { useCallback, useRef } from 'react';
 
 import { addressAtom, locationAtom, mapAtom } from '@/store/atom';
-import { getInfoWindowElement } from '@/utils/infoWindowElement';
+import { getInfoWindowElement } from '@/utils/getElement';
 
 type pointType = 'start' | 'end';
 

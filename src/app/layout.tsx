@@ -10,8 +10,18 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const MetaTag = (
+    <head>
+      <meta
+        httpEquiv="Content-Security-Policy"
+        content="upgrade-insecure-requests"
+      ></meta>
+    </head>
+  );
+
   return (
     <html lang="ko">
+      {process.env.NODE_ENV !== 'development' && MetaTag}
       <body>
         <main id="root-layout">{children}</main>
       </body>
