@@ -16,6 +16,7 @@ export default function KakaoMap() {
   const location = useAtomValue(locationAtom);
   const [map, setMap] = useAtom(mapAtom);
   const mapRef = useRef<HTMLDivElement>(null);
+  const polylines = useRef<kakao.maps.Polyline[]>([]);
 
   const { displayMarker, displayInfoWindow, closeInfoWindow, getPosition } =
     useKakaoMap();
@@ -50,12 +51,21 @@ export default function KakaoMap() {
       data.forEach(({ locations, routingProfile }) => {
         const polyline = getPolylineOfDirection(locations, routingProfile);
         polyline.setMap(map);
+        polylines.current?.push(polyline);
       });
     }
   }, [location]);
 
+  const clearPolylines = () => {
+    polylines.current?.forEach((polyline) => {
+      polyline.setMap(null);
+    });
+    polylines.current = [];
+  };
+
   useEffect(() => {
     if (address.start && address.end) {
+      clearPolylines();
       postDirection();
     }
   }, [address, postDirection]);
