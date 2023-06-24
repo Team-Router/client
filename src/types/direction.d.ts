@@ -1,16 +1,15 @@
-import { PEDESTRIAN, CYCLABILITY } from '../constants';
-
 interface Location {
   latitude: number;
   longitude: number;
 }
 
-type RoutingProfile = PEDESTRIAN | CYCLABILITY;
+export type RoutingProfile = 'pedestrian' | 'cyclability';
 
-interface RoutingData extends RoutingProfile {
+interface RoutingData {
   locations: Location[];
   duration: number;
   distance: number;
+  routingProfile: RoutingProfile;
 }
 
 export interface PostDirectionResponse {

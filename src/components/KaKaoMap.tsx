@@ -9,7 +9,7 @@ import { PEDESTRIAN, SUCCESS } from '@/constants';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { useKakaoMap } from '@/hooks/useKakaoMap';
 import { addressAtom, locationAtom, mapAtom } from '@/store/atom';
-import { Location, RoutingProfile } from '@/types/direction';
+import type { Location, RoutingProfile } from '@/types/direction';
 import { getResultOverlayElement } from '@/utils/getElement';
 
 export default function KakaoMap() {
@@ -58,7 +58,8 @@ export default function KakaoMap() {
           locations[locations.length - 1].latitude,
           locations[locations.length - 1].longitude,
           distance,
-          duration
+          duration,
+          routingProfile
         );
       });
     }
@@ -73,11 +74,12 @@ export default function KakaoMap() {
     latitude: number,
     longitude: number,
     distance: number,
-    duration: number
+    duration: number,
+    routingProfile: RoutingProfile
   ) => {
     const resultOverlay = new kakao.maps.CustomOverlay({
       position: new kakao.maps.LatLng(latitude, longitude),
-      content: getResultOverlayElement(distance, duration),
+      content: getResultOverlayElement(distance, duration, routingProfile),
     });
     resultOverlay.setMap(map);
     resultOverlays.current.push(resultOverlay);
