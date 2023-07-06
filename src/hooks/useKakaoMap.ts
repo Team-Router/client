@@ -1,6 +1,8 @@
 import { useAtom, useAtomValue } from 'jotai';
 import { useCallback, useRef } from 'react';
 
+import { getAllStation } from '@/api/station';
+import { SUCCESS } from '@/constants';
 import { addressAtom, locationAtom, mapAtom } from '@/store/atom';
 import { getInfoWindowElement } from '@/utils/getElement';
 
@@ -13,6 +15,7 @@ export function useKakaoMap() {
   const startMarker = useRef<kakao.maps.Marker>();
   const endMarker = useRef<kakao.maps.Marker>();
   const infoWindow = useRef<kakao.maps.InfoWindow | null>();
+  const stationInfoWindows = useRef<kakao.maps.InfoWindow[] | null>();
 
   const getPosition = (lat: number, lon: number) => {
     return new kakao.maps.LatLng(lat, lon);
@@ -96,11 +99,35 @@ export function useKakaoMap() {
     geocoder.coord2Address(lon, lat, callback);
   };
 
+  const getRealTimeAllStation = async () => {
+    try {
+      const { data, result } = await getAllStation();
+      if (result !== SUCCESS || !map) {
+        throw new Error();
+      }
+      stationInfoWindows.current = data.map(
+        (d) =>
+          new kakao.maps.InfoWindow({
+            map,
+            position: new kakao.maps.LatLng(
+              d.stationLatitude,
+              d.stationLongitude
+            ),
+            content: `<div style="width: 100%; padding:5px;">${d.parkingBikeTotCnt}</div>`,
+          })
+      );
+      console.log(stationInfoWindows.current);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return {
     getPosition,
     displayMarker,
     displayInfoWindow,
     closeInfoWindow,
     changeAddress,
+    getRealTimeAllStation,
   };
 }

@@ -20,13 +20,19 @@ export default function KakaoMap() {
   const polylines = useRef<kakao.maps.Polyline[]>([]);
   const resultOverlays = useRef<kakao.maps.CustomOverlay[]>([]);
 
-  const { displayMarker, displayInfoWindow, closeInfoWindow, getPosition } =
-    useKakaoMap();
+  const {
+    displayMarker,
+    displayInfoWindow,
+    closeInfoWindow,
+    getPosition,
+    getRealTimeAllStation,
+  } = useKakaoMap();
   const { initPosition } = useGeolocation();
 
   useEffect(() => {
     displayMarker(location.startLatitude, location.startLongitude, 'start');
-  }, [location, displayMarker]);
+    // getRealTimeAllStation();
+  }, [location, displayMarker, getRealTimeAllStation]);
 
   useEffect(() => {
     if (!map) {
