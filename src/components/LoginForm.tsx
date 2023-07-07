@@ -4,10 +4,7 @@ import React from 'react';
 
 export default function LoginForm() {
   const handleClickKakaoLoginButton = () => {
-    const { NEXT_PUBLIC_KAKAO_OAUTH_URL, NEXT_PUBLIC_KAKAO_CLIENT_ID } =
-      process.env;
-
-    const KAKAO_AUTH_URL = `${NEXT_PUBLIC_KAKAO_OAUTH_URL}/authorize?client_id=${NEXT_PUBLIC_KAKAO_CLIENT_ID}&redirect_uri=${window.location.origin}/login/KAKAO&response_type=code`;
+    const KAKAO_AUTH_URL = `${process.env.NEXT_PUBLIC_KAKAO_OAUTH_URL}/authorize?client_id=${process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID}&redirect_uri=${window.location.origin}/oauth/kakao&response_type=code`;
 
     window.location.replace(KAKAO_AUTH_URL);
   };
