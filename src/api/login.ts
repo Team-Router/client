@@ -29,7 +29,7 @@ export const googleLogin = ({
   redirectUri,
   grantType,
 }: PostLoginParam) => {
-  return postFetch('/oauth/kakao', {
+  return postFetch('/oauth/google', {
     authorizationCode,
     clientId,
     clientSecret,

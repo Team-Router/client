@@ -1,19 +1,21 @@
 'use client';
-import { useSearchParams } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import React, { useEffect } from 'react';
 
-import { kakaoLogin } from '@/api/login';
+import { kakaoLogin, googleLogin } from '@/api/login';
 
 export default function LoginType() {
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const authorizationCode = searchParams.get('code') || '';
 
   useEffect(() => {
     if (authorizationCode) {
-      try {
+      const type = pathname.split('/')[2];
+      if (type === 'kakao') {
         oauthKakaoLogin();
-      } catch (e) {
-        console.error(e);
+      } else {
+        oauthGoogleLogin();
       }
     }
   }, []);
@@ -32,7 +34,20 @@ export default function LoginType() {
     }
   };
 
-  // const oauthGoogleLogin = async () => {};
+  const oauthGoogleLogin = async () => {
+    const { data } = await googleLogin({
+      authorizationCode,
+      clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '',
+      clientSecret: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_SECRET || '',
+      redirectUri: `${window.location.origin}/oauth/google`,
+      grantType: 'authorization_code',
+    });
 
-  return <div>KakaoLogin</div>;
+    if (data) {
+      const { accessToken, refershToken, accessTokenExpiresIn } = data;
+      console.log(accessToken, refershToken, accessTokenExpiresIn);
+    }
+  };
+
+  return <></>;
 }
