@@ -2,7 +2,7 @@
 import { useSearchParams } from 'next/navigation';
 import React, { useEffect } from 'react';
 
-import { login } from '@/api/login';
+import { kakaoLogin } from '@/api/login';
 
 export default function LoginType() {
   const searchParams = useSearchParams();
@@ -11,15 +11,15 @@ export default function LoginType() {
   useEffect(() => {
     if (authorizationCode) {
       try {
-        oauthLogin();
+        oauthKakaoLogin();
       } catch (e) {
         console.error(e);
       }
     }
   }, []);
 
-  const oauthLogin = async () => {
-    const data = await login({
+  const oauthKakaoLogin = async () => {
+    const { data } = await kakaoLogin({
       authorizationCode,
       clientId: process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID || '',
       redirectUri: `${window.location.origin}/oauth/kakao`,
@@ -28,11 +28,11 @@ export default function LoginType() {
 
     if (data) {
       const { accessToken, refershToken, accessTokenExpiresIn } = data;
-      // 토큰 저장
-
       console.log(accessToken, refershToken, accessTokenExpiresIn);
     }
   };
+
+  // const oauthGoogleLogin = async () => {};
 
   return <div>KakaoLogin</div>;
 }
