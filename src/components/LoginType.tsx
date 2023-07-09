@@ -31,6 +31,8 @@ export default function LoginType() {
     if (data) {
       const { accessToken, refershToken, accessTokenExpiresIn } = data;
       console.log(accessToken, refershToken, accessTokenExpiresIn);
+      //TODO: 쿠키/세션/로컬스토리지 저장 후 사용
+      //TODO: 로그인 성공 후 페이지 이동
     }
   };
 
@@ -46,6 +48,8 @@ export default function LoginType() {
     if (data) {
       const { accessToken, refershToken, accessTokenExpiresIn } = data;
       console.log(accessToken, refershToken, accessTokenExpiresIn);
+      //TODO: 쿠키/세션/로컬스토리지 저장 후 사용
+      //TODO: 로그인 성공 후 페이지 이동
     }
   };
 
