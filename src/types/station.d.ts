@@ -13,3 +13,8 @@ interface StationResponse {
   data: StationData[];
   error: [];
 }
+
+interface StationParam {
+  latitude: number;
+  longitude: number;
+}

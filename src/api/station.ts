@@ -1,5 +1,8 @@
-import { getFetch } from './common';
+import { postFetch } from './common';
 
-export const getAllStation = () => {
-  return getFetch('/station/realtime') as Promise<StationResponse>;
+export const getRealTimeStation = (mapCenterLocation: StationParam) => {
+  return postFetch(
+    '/station/realtime',
+    mapCenterLocation
+  ) as Promise<StationResponse>;
 };

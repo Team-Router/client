@@ -1,5 +1,6 @@
 'use client';
 
+import { Button } from '@mui/material';
 import { useAtom, useAtomValue } from 'jotai';
 import Script from 'next/script';
 import React, { useCallback, useEffect, useRef } from 'react';
@@ -25,14 +26,14 @@ export default function KakaoMap() {
     displayInfoWindow,
     closeInfoWindow,
     getPosition,
-    getRealTimeAllStation,
+    displayRealTimeStation,
+    closeRealTimeStationInfoWindow,
   } = useKakaoMap();
   const { initPosition } = useGeolocation();
 
   useEffect(() => {
     displayMarker(location.startLatitude, location.startLongitude, 'start');
-    // getRealTimeAllStation();
-  }, [location, displayMarker, getRealTimeAllStation]);
+  }, [location, displayMarker]);
 
   useEffect(() => {
     if (!map) {
@@ -101,8 +102,9 @@ export default function KakaoMap() {
       clearPolylines();
       clearResultOverlays();
       postDirection();
+      closeRealTimeStationInfoWindow();
     }
-  }, [address, postDirection]);
+  }, [address, postDirection, closeRealTimeStationInfoWindow]);
 
   const getPolylineOfDirection = useCallback(
     (locations: Location[], routingProfile: RoutingProfile) => {
@@ -120,12 +122,15 @@ export default function KakaoMap() {
 
   return (
     <>
+      <Button onClick={displayRealTimeStation} fullWidth>
+        현 지도에서 대여소 검색
+      </Button>
       <div
         ref={mapRef}
         id="kakao-map"
         style={{
           width: '100%',
-          height: '87%',
+          height: '83%',
         }}
       ></div>
       <Script
