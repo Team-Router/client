@@ -105,7 +105,6 @@ export function useKakaoMap() {
         stationInfoWindow.close();
       }
     }
-    console.log('called', stationInfoWindows.current);
   };
 
   const displayRealTimeStation = async () => {
