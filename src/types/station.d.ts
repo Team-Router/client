@@ -7,11 +7,8 @@ interface StationData {
 }
 
 interface StationResponse {
-  state: 200;
-  result: 'success';
-  message: null;
+  count: number;
   data: StationData[];
-  error: [];
 }
 
 interface StationParam {

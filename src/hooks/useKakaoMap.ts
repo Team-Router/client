@@ -2,7 +2,6 @@ import { useAtom, useAtomValue } from 'jotai';
 import { useCallback, useRef } from 'react';
 
 import { getRealTimeStation } from '@/api/station';
-import { SUCCESS } from '@/constants';
 import { addressAtom, locationAtom, mapAtom } from '@/store/atom';
 import { getInfoWindowElement } from '@/utils/getElement';
 
@@ -116,11 +115,11 @@ export function useKakaoMap() {
 
     const mapCenterLocation = map.getCenter();
     try {
-      const { data, result } = await getRealTimeStation({
+      const { data } = await getRealTimeStation({
         latitude: mapCenterLocation.getLat(),
         longitude: mapCenterLocation.getLng(),
       });
-      if (result !== SUCCESS) {
+      if (data.length === 0) {
         throw new Error();
       }
       stationInfoWindows.current.push(
