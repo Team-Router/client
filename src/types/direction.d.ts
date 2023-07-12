@@ -13,9 +13,5 @@ interface RoutingData {
 }
 
 export interface PostDirectionResponse {
-  state: number;
-  result: 'success';
-  message: null;
-  data: RoutingData[];
-  error: [];
+  routes: RoutingData[];
 }

@@ -1,6 +1,7 @@
 import { useAtom, useAtomValue } from 'jotai';
 import { useCallback, useRef } from 'react';
 
+import { getRealTimeStation } from '@/api/station';
 import { addressAtom, locationAtom, mapAtom } from '@/store/atom';
 import { getInfoWindowElement } from '@/utils/getElement';
 
@@ -13,6 +14,7 @@ export function useKakaoMap() {
   const startMarker = useRef<kakao.maps.Marker>();
   const endMarker = useRef<kakao.maps.Marker>();
   const infoWindow = useRef<kakao.maps.InfoWindow | null>();
+  const stationInfoWindows = useRef<kakao.maps.InfoWindow[]>([]);
 
   const getPosition = (lat: number, lon: number) => {
     return new kakao.maps.LatLng(lat, lon);
@@ -96,11 +98,55 @@ export function useKakaoMap() {
     geocoder.coord2Address(lon, lat, callback);
   };
 
+  const closeRealTimeStationInfoWindow = () => {
+    if (stationInfoWindows.current) {
+      for (const stationInfoWindow of stationInfoWindows.current) {
+        stationInfoWindow.close();
+      }
+    }
+  };
+
+  const displayRealTimeStation = async () => {
+    if (!map) {
+      return;
+    }
+
+    closeRealTimeStationInfoWindow();
+
+    const mapCenterLocation = map.getCenter();
+    try {
+      const { data } = await getRealTimeStation({
+        latitude: mapCenterLocation.getLat(),
+        longitude: mapCenterLocation.getLng(),
+      });
+      if (data.length === 0) {
+        throw new Error();
+      }
+      stationInfoWindows.current.push(
+        ...data.map(
+          (d) =>
+            new kakao.maps.InfoWindow({
+              map,
+              position: new kakao.maps.LatLng(
+                d.stationLatitude,
+                d.stationLongitude
+              ),
+              content: `<div style="display: flex; padding:5px;">대여 가능: ${d.parkingBikeTotCnt}</div>`,
+            })
+        )
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return {
     getPosition,
     displayMarker,
     displayInfoWindow,
     closeInfoWindow,
     changeAddress,
+    displayRealTimeStation,
+    closeRealTimeStationInfoWindow,
   };
 }

@@ -1,11 +1,12 @@
 'use client';
 
+import { Button } from '@mui/material';
 import { useAtom, useAtomValue } from 'jotai';
 import Script from 'next/script';
 import React, { useCallback, useEffect, useRef } from 'react';
 
 import { getDirectionBySelectedLocation } from '@/api/direction';
-import { PEDESTRIAN, SUCCESS } from '@/constants';
+import { PEDESTRIAN } from '@/constants';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { useKakaoMap } from '@/hooks/useKakaoMap';
 import { addressAtom, locationAtom, mapAtom } from '@/store/atom';
@@ -20,8 +21,14 @@ export default function KakaoMap() {
   const polylines = useRef<kakao.maps.Polyline[]>([]);
   const resultOverlays = useRef<kakao.maps.CustomOverlay[]>([]);
 
-  const { displayMarker, displayInfoWindow, closeInfoWindow, getPosition } =
-    useKakaoMap();
+  const {
+    displayMarker,
+    displayInfoWindow,
+    closeInfoWindow,
+    getPosition,
+    displayRealTimeStation,
+    closeRealTimeStationInfoWindow,
+  } = useKakaoMap();
   const { initPosition } = useGeolocation();
 
   useEffect(() => {
@@ -47,22 +54,24 @@ export default function KakaoMap() {
   }, [map, displayInfoWindow, closeInfoWindow]);
 
   const postDirection = useCallback(async () => {
-    const { data, result } = await getDirectionBySelectedLocation(location);
+    const { routes } = await getDirectionBySelectedLocation(location);
 
-    if (result === SUCCESS) {
-      data.forEach(({ locations, routingProfile, distance, duration }) => {
-        const polyline = getPolylineOfDirection(locations, routingProfile);
-        polyline.setMap(map);
-        polylines.current?.push(polyline);
-        displayResultOverlay(
-          locations[locations.length - 1].latitude,
-          locations[locations.length - 1].longitude,
-          distance,
-          duration,
-          routingProfile
-        );
-      });
+    if (routes.length === 0) {
+      alert('경로가 없습니다.');
     }
+
+    routes.forEach(({ locations, routingProfile, distance, duration }) => {
+      const polyline = getPolylineOfDirection(locations, routingProfile);
+      polyline.setMap(map);
+      polylines.current?.push(polyline);
+      displayResultOverlay(
+        locations[locations.length - 1].latitude,
+        locations[locations.length - 1].longitude,
+        distance,
+        duration,
+        routingProfile
+      );
+    });
   }, [location]);
 
   const clearPolylines = () => {
@@ -95,8 +104,9 @@ export default function KakaoMap() {
       clearPolylines();
       clearResultOverlays();
       postDirection();
+      closeRealTimeStationInfoWindow();
     }
-  }, [address, postDirection]);
+  }, [address, postDirection, closeRealTimeStationInfoWindow]);
 
   const getPolylineOfDirection = useCallback(
     (locations: Location[], routingProfile: RoutingProfile) => {
@@ -114,12 +124,15 @@ export default function KakaoMap() {
 
   return (
     <>
+      <Button onClick={displayRealTimeStation} fullWidth>
+        현 지도에서 대여소 검색
+      </Button>
       <div
         ref={mapRef}
         id="kakao-map"
         style={{
           width: '100%',
-          height: '87%',
+          height: '83%',
         }}
       ></div>
       <Script

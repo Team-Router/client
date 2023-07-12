@@ -1,4 +1,4 @@
-import { PostDirectionResponse } from '@/types/direction';
+import type { PostDirectionResponse } from '@/types/direction';
 
 import { postFetch } from './common';
 
