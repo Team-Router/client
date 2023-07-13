@@ -15,3 +15,7 @@ interface RoutingData {
 export interface PostDirectionResponse {
   routes: RoutingData[];
 }
+
+export interface PostWalkDirectionResponse extends RoutingData {
+  routingProfile: 'pedestrian';
+}
