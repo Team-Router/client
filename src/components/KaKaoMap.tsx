@@ -10,7 +10,7 @@ import { PEDESTRIAN } from '@/constants';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { useKakaoMap } from '@/hooks/useKakaoMap';
 import { addressAtom, locationAtom, mapAtom } from '@/store/atom';
-import type { Location, RoutingProfile } from '@/types/direction';
+import { LocalLocation, RoutingProfile } from '@/types/direction';
 import { getResultOverlayElement } from '@/utils/getElement';
 
 export default function KakaoMap() {
@@ -54,24 +54,28 @@ export default function KakaoMap() {
   }, [map, displayInfoWindow, closeInfoWindow]);
 
   const postDirection = useCallback(async () => {
-    const { routes } = await getDirectionBySelectedLocation(location);
+    const { getDirectionsResponses } = await getDirectionBySelectedLocation(
+      location
+    );
 
-    if (routes.length === 0) {
+    if (getDirectionsResponses.length === 0) {
       alert('경로가 없습니다.');
     }
 
-    routes.forEach(({ locations, routingProfile, distance, duration }) => {
-      const polyline = getPolylineOfDirection(locations, routingProfile);
-      polyline.setMap(map);
-      polylines.current?.push(polyline);
-      displayResultOverlay(
-        locations[locations.length - 1].latitude,
-        locations[locations.length - 1].longitude,
-        distance,
-        duration,
-        routingProfile
-      );
-    });
+    getDirectionsResponses.forEach(
+      ({ locations, routingProfile, distance, duration }) => {
+        const polyline = getPolylineOfDirection(locations, routingProfile);
+        polyline.setMap(map);
+        polylines.current?.push(polyline);
+        displayResultOverlay(
+          locations[locations.length - 1].latitude,
+          locations[locations.length - 1].longitude,
+          distance,
+          duration,
+          routingProfile
+        );
+      }
+    );
   }, [location]);
 
   const clearPolylines = () => {
@@ -109,7 +113,7 @@ export default function KakaoMap() {
   }, [address, postDirection, closeRealTimeStationInfoWindow]);
 
   const getPolylineOfDirection = useCallback(
-    (locations: Location[], routingProfile: RoutingProfile) => {
+    (locations: LocalLocation[], routingProfile: RoutingProfile) => {
       return new kakao.maps.Polyline({
         path: locations.map(({ latitude, longitude }) =>
           getPosition(latitude, longitude)

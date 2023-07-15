@@ -1,3 +1,5 @@
+import { FavoriteStationResponse } from '@/types/station';
+
 import { getFetch } from './common';
 
 export const getFavoriteAllStation = () => {

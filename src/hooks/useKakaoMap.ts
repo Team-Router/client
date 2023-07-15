@@ -115,23 +115,23 @@ export function useKakaoMap() {
 
     const mapCenterLocation = map.getCenter();
     try {
-      const { data } = await getRealTimeStation({
+      const { stationRealtimeResponses } = await getRealTimeStation({
         latitude: mapCenterLocation.getLat(),
         longitude: mapCenterLocation.getLng(),
       });
-      if (data.length === 0) {
+      if (stationRealtimeResponses.length === 0) {
         throw new Error();
       }
       stationInfoWindows.current.push(
-        ...data.map(
-          (d) =>
+        ...stationRealtimeResponses.map(
+          (stationRealtime) =>
             new kakao.maps.InfoWindow({
               map,
               position: new kakao.maps.LatLng(
-                d.stationLatitude,
-                d.stationLongitude
+                stationRealtime.latitude,
+                stationRealtime.longitude
               ),
-              content: `<div style="display: flex; padding:5px;">대여 가능: ${d.parkingBikeTotCnt}</div>`,
+              content: `<div style="display: flex; padding:5px;">대여 가능: ${stationRealtime.count}</div>`,
             })
         )
       );
