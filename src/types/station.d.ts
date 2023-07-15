@@ -15,3 +15,7 @@ interface StationParam {
   latitude: number;
   longitude: number;
 }
+
+interface FavoriteStationResponse extends StationResponse {
+  favoriteStationResponses: StationData[];
+}
