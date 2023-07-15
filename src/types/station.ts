@@ -6,16 +6,16 @@ interface StationData {
   id: string;
 }
 
-interface StationResponse {
-  count: number;
-  stationRealtimeResponses: StationData[];
-}
-
-interface StationParam {
+export interface StationParam {
   latitude: number;
   longitude: number;
 }
 
-interface FavoriteStationResponse extends StationResponse {
+export interface StationResponse {
+  count: number;
+  stationRealtimeResponses: StationData[];
+}
+
+export interface FavoriteStationResponse extends StationResponse {
   favoriteStationResponses: StationData[];
 }
