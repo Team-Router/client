@@ -13,7 +13,7 @@ interface RoutingData {
 }
 
 export interface PostDirectionResponse {
-  routes: RoutingData[];
+  getDirectionsResponses: RoutingData[];
 }
 
 export interface PostWalkDirectionResponse extends RoutingData {

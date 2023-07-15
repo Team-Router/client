@@ -1,14 +1,14 @@
 interface StationData {
-  stationName: string;
-  parkingBikeTotCnt: number;
-  stationLatitude: number;
-  stationLongitude: number;
-  stationId: string;
+  name: string;
+  count: number;
+  latitude: number;
+  longitude: number;
+  id: string;
 }
 
 interface StationResponse {
   count: number;
-  data: StationData[];
+  stationRealtimeResponses: StationData[];
 }
 
 interface StationParam {
