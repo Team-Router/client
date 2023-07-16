@@ -5,7 +5,7 @@ import { Tab, Tabs } from '@mui/material';
 import { useState } from 'react';
 
 import AddressInput from '@/components/AddressInput';
-import Favorites from '@/components/Favorites';
+import Favorites from '@/components/Favorites/Favorites';
 import KaKaoMap from '@/components/KaKaoMap';
 
 export default function Home() {
