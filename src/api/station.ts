@@ -1,3 +1,5 @@
+import { StationParam, StationResponse } from '@/types/station';
+
 import { postFetch } from './common';
 
 export const getRealTimeStation = (mapCenterLocation: StationParam) => {

@@ -1,4 +1,4 @@
-interface Location {
+export interface LocalLocation {
   latitude: number;
   longitude: number;
 }
@@ -6,12 +6,16 @@ interface Location {
 export type RoutingProfile = 'pedestrian' | 'cyclability';
 
 interface RoutingData {
-  locations: Location[];
+  locations: LocalLocation[];
   duration: number;
   distance: number;
   routingProfile: RoutingProfile;
 }
 
 export interface PostDirectionResponse {
-  routes: RoutingData[];
+  getDirectionsResponses: RoutingData[];
+}
+
+export interface PostWalkDirectionResponse extends RoutingData {
+  routingProfile: 'pedestrian';
 }

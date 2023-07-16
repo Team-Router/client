@@ -1,4 +1,7 @@
-import type { PostDirectionResponse } from '@/types/direction';
+import type {
+  PostDirectionResponse,
+  PostWalkDirectionResponse,
+} from '@/types/direction';
 
 import { postFetch } from './common';
 
@@ -25,4 +28,22 @@ export const getDirectionBySelectedLocation = ({
       longitude: endLongitude,
     },
   }) as Promise<PostDirectionResponse>;
+};
+
+export const getWalkDirectionBySelectedLocation = ({
+  startLatitude,
+  startLongitude,
+  endLatitude,
+  endLongitude,
+}: PostDirectionParam) => {
+  return postFetch('/route/walk', {
+    startLocation: {
+      latitude: startLatitude,
+      longitude: startLongitude,
+    },
+    endLocation: {
+      latitude: endLatitude,
+      longitude: endLongitude,
+    },
+  }) as Promise<PostWalkDirectionResponse>;
 };
