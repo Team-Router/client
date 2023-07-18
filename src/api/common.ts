@@ -1,5 +1,3 @@
-const token = localStorage.getItem('token');
-
 interface Param {
   [key: string]: any;
 }
@@ -22,7 +20,7 @@ export const getFetch = (url: string, options?: RequestInit) => {
     ...options,
     mode: 'cors',
     headers: {
-      Authentication: `Bearer ${token}`,
+      // Authentication: `Bearer ${token}`,
     },
   });
 };
@@ -33,7 +31,7 @@ export const postFetch = (url: string, param: Param, options?: RequestInit) => {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authentication: `Bearer ${token}`,
+      // Authentication: `Bearer ${token}`,
     },
     mode: 'cors',
     body: JSON.stringify(param),
