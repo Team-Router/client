@@ -6,9 +6,8 @@ import React, { useState } from 'react';
 import Place from '@/components/Favorites/Place';
 import Station from '@/components/Favorites/Station';
 
-export default function Favorites() {
+export default function FavoritesTab() {
   const [tabValue, setTabValue] = useState(0);
-
   const handleChange = (event: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
   };
