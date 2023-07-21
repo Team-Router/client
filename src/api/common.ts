@@ -33,3 +33,11 @@ export const postFetch = (url: string, param: Param, options?: RequestInit) => {
     body: JSON.stringify(param),
   });
 };
+
+export const deleteFetch = (url: string, options?: RequestInit) => {
+  return commonFetch(url, {
+    ...options,
+    method: 'DELETE',
+    mode: 'cors',
+  });
+};
