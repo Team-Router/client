@@ -5,10 +5,15 @@ import React, { useState } from 'react';
 
 import Place from '@/components/Favorites/Place';
 import Station from '@/components/Favorites/Station';
+import { PLACE, STATION } from '@/constants';
 
 export default function FavoritesTab() {
-  const [tabValue, setTabValue] = useState(0);
-  const handleChange = (event: React.SyntheticEvent, newTabValue: number) => {
+  const [tabValue, setTabValue] = useState(STATION);
+
+  const handleTabChange = (
+    event: React.SyntheticEvent,
+    newTabValue: string
+  ) => {
     setTabValue(newTabValue);
   };
 
@@ -16,15 +21,15 @@ export default function FavoritesTab() {
     <>
       <Tabs
         value={tabValue}
-        onChange={handleChange}
+        onChange={handleTabChange}
         aria-label="icon-tabs"
         variant="fullWidth"
       >
-        <Tab aria-label="station" label="대여소" />
-        <Tab aria-label="place" label="장소" />
+        <Tab aria-label="station" label="대여소" value={STATION} />
+        <Tab aria-label="place" label="장소" value={PLACE} />
       </Tabs>
-      {tabValue === 0 && <Station />}
-      {tabValue === 1 && <Place />}
+      {tabValue === STATION && <Station />}
+      {tabValue === PLACE && <Place />}
     </>
   );
 }

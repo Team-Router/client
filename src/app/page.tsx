@@ -5,7 +5,7 @@ import { Tab, Tabs } from '@mui/material';
 import { useState } from 'react';
 
 import AddressInput from '@/components/AddressInput';
-import Favorites from '@/components/Favorites/Favorites';
+import FavoritesTabs from '@/components/Favorites/FavoritesTab';
 import KaKaoMap from '@/components/KaKaoMap';
 
 export default function Home() {
@@ -36,7 +36,7 @@ export default function Home() {
           <KaKaoMap />
         </>
       )}
-      {tabValue === 1 && <Favorites />}
+      {tabValue === 1 && <FavoritesTabs />}
     </>
   );
 }
