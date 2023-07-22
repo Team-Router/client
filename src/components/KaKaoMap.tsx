@@ -37,7 +37,7 @@ export default function KakaoMap() {
 
   useEffect(() => {
     displayMarker(location.startLatitude, location.startLongitude, 'start');
-  }, [location, displayMarker]);
+  }, [location.startLatitude, location.startLongitude, displayMarker]);
 
   useEffect(() => {
     if (!map) {
@@ -130,6 +130,11 @@ export default function KakaoMap() {
     resultOverlays.current.forEach((overlay) => overlay.setMap(null));
     resultOverlays.current = [];
   };
+
+  useEffect(() => {
+    clearPolylines();
+    clearResultOverlays();
+  }, [address]);
 
   const searchDirection = (searchType: 'withCycle' | 'withoutCycle') => {
     clearPolylines();
