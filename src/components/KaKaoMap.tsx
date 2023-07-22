@@ -174,7 +174,8 @@ export default function KakaoMap() {
         onClick={displayRealTimeStation}
         sx={{
           position: 'absolute',
-          width: '414px',
+          maxWidth: '414px',
+          width: '100%',
           zIndex: 1,
         }}
       >
