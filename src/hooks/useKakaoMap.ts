@@ -98,6 +98,25 @@ export function useKakaoMap() {
     geocoder.coord2Address(lon, lat, callback);
   };
 
+  const changeAddressWithGeocoder = (lat: number, lon: number) => {
+    const geocoder = new kakao.maps.services.Geocoder();
+
+    return new Promise((resolve, reject) =>
+      geocoder.coord2Address(
+        lon,
+        lat,
+        (result: any, status: kakao.maps.services.Status) => {
+          if (status === kakao.maps.services.Status.OK) {
+            resolve(result[0].address.address_name);
+          } else {
+            alert('현재 위치의 주소를 가져올 수 없습니다.');
+            reject(status);
+          }
+        }
+      )
+    );
+  };
+
   const closeRealTimeStationInfoWindow = () => {
     if (stationInfoWindows.current) {
       for (const stationInfoWindow of stationInfoWindows.current) {
@@ -146,6 +165,7 @@ export function useKakaoMap() {
     displayInfoWindow,
     closeInfoWindow,
     changeAddress,
+    changeAddressWithGeocoder,
     displayRealTimeStation,
     closeRealTimeStationInfoWindow,
   };
