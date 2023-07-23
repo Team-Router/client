@@ -30,6 +30,11 @@ export default function RootLayout({
         />
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png"></link>
         <link rel="apple-touch-startup-image" href="/splash-screen.png"></link>
+        <meta name="description" content="따릉이 어디서 빌리지?" />
+        <meta property="og:url" content={'https://re-cycle-test.vercel.app/'} />
+        <meta property="og:title" content={'RE:cycle'} />
+        <meta property="og:description" content="따릉이 어디서 빌리지?" />
+        <meta property="og:image" content="/icons/icon-512x512.png" />
       </head>
       <body>
         <main id="root-layout">{children}</main>
