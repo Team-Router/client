@@ -17,11 +17,15 @@ export const getFavoriteAllStation = (token: string) => {
 };
 
 export const addFavoriteStation = (stationId: string, token: string) => {
-  return postFetch(`/favorite?stationId=${stationId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  return postFetch(
+    `/favorite?stationId=${stationId}`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 };
 
 export const deleteFavoriteStation = (stationId: string, token: string) => {
