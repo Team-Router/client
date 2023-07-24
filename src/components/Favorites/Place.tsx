@@ -1,7 +1,31 @@
-import React from 'react';
+'use client';
+import BusinessIcon from '@mui/icons-material/Business';
+import HomeIcon from '@mui/icons-material/Home';
+import MapsHomeWorkIcon from '@mui/icons-material/MapsHomeWork';
+import {
+  Avatar,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+} from '@mui/material';
+import React, { useEffect, useState } from 'react';
+
+import { useKakaoMap } from '@/hooks/useKakaoMap';
+
+interface Place {
+  id: number;
+  name: string;
+  latitude: number;
+  longitude: number;
+  address: Promise<string>;
+}
 
 export default function Place() {
-  const place = {
+  const { changeAddressWithGeocoder } = useKakaoMap();
+  const [favoritePlaces, setFavoritePlaces] = useState<Place[]>([]);
+
+  const places = {
     count: 4,
     favoritePlaces: [
       {
@@ -31,5 +55,34 @@ export default function Place() {
     ],
   };
 
-  return <div>Place</div>;
+  useEffect(() => {
+    setFavoritePlaces(
+      places.favoritePlaces.map((place) => ({
+        ...place,
+        address: getAddressFromLatLon(place.latitude, place.longitude),
+      }))
+    );
+  }, []);
+
+  const getAddressFromLatLon = async (lat: number, lon: number) => {
+    const address = await changeAddressWithGeocoder(lat, lon);
+    return address as string;
+  };
+
+  return (
+    <List>
+      {favoritePlaces.map(({ id, name, address }, index) => (
+        <ListItem key={`${name}-${id}-${index}`}>
+          <ListItemAvatar>
+            <Avatar>
+              {name === 'HOME' && <HomeIcon />}
+              {name === 'OFFICE' && <BusinessIcon />}
+              {name === 'NORMAL' && <MapsHomeWorkIcon />}
+            </Avatar>
+          </ListItemAvatar>
+          <ListItemText primary={address} />
+        </ListItem>
+      ))}
+    </List>
+  );
 }
