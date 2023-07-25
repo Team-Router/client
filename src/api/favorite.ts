@@ -1,4 +1,4 @@
-import { FavoriteStationResponse } from '@/types/station';
+import { StationInfoResponse } from '@/types/favorite';
 
 import { deleteFetch, getFetch, postFetch } from './common';
 
@@ -13,7 +13,7 @@ export const getFavoriteAllStation = (token: string) => {
     headers: {
       Authorization: `Bearer ${token}`,
     },
-  }) as Promise<FavoriteStationResponse>;
+  }) as Promise<StationInfoResponse>;
 };
 
 export const addFavoriteStation = (stationId: string, token: string) => {
