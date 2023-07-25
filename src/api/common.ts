@@ -3,7 +3,6 @@ interface Param {
 }
 
 const commonFetch = (url: string, options?: RequestInit) => {
-  console.log(options);
   return fetch(`${process.env.NEXT_PUBLIC_BASE_URL}${url}`, {
     ...options,
     mode: 'cors',
