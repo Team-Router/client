@@ -8,6 +8,11 @@ interface PostLoginParam {
   grantType: string;
 }
 
+interface LoginResponse {
+  accessToken: string;
+  refreshToken: string;
+}
+
 export const kakaoLogin = ({
   authorizationCode,
   clientId,
@@ -19,7 +24,7 @@ export const kakaoLogin = ({
     clientId,
     redirectUri,
     grantType,
-  });
+  }) as Promise<LoginResponse>;
 };
 
 export const googleLogin = ({
@@ -35,5 +40,5 @@ export const googleLogin = ({
     clientSecret,
     redirectUri,
     grantType,
-  });
+  }) as Promise<LoginResponse>;
 };

@@ -42,8 +42,13 @@ export default function LoginType() {
         setRefreshToken(refreshToken);
 
         router.push('/');
+        return;
+      } else {
+        //TODO: 다시 로그인해달라는 Alert 띄우기
+        redirect('/oauth');
       }
     } catch (e) {
+      //TODO: 다시 로그인해달라는 Alert 띄우기
       redirect('/oauth');
     }
   };
@@ -64,8 +69,12 @@ export default function LoginType() {
         setRefreshToken(refreshToken);
 
         router.push('/');
+      } else {
+        //TODO: 다시 로그인해달라는 Alert 띄우기
+        redirect('/oauth');
       }
     } catch (e) {
+      //TODO: 다시 로그인해달라는 Alert 띄우기
       redirect('/oauth');
     }
   };
