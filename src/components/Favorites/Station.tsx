@@ -12,7 +12,7 @@ import React, { useEffect, useState } from 'react';
 import { getFavoriteAllStation } from '@/api/favorite';
 import { useKakaoMap } from '@/hooks/useKakaoMap';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { Station } from '@/types/favorite';
+import type { Station } from '@/types/favorite';
 
 export default function Station() {
   const { changeAddressWithGeocoder } = useKakaoMap();

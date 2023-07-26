@@ -1,4 +1,4 @@
-import { PlaceInfoResponse, StationInfoResponse } from '@/types/favorite';
+import type { PlaceInfoResponse, StationInfoResponse } from '@/types/favorite';
 
 import { deleteFetch, getFetch, postFetch } from './common';
 
