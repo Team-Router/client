@@ -3,7 +3,10 @@ interface Param {
 }
 
 const commonFetch = (url: string, options?: RequestInit) => {
-  return fetch(`${process.env.NEXT_PUBLIC_BASE_URL}${url}`, { ...options })
+  return fetch(`${process.env.NEXT_PUBLIC_BASE_URL}${url}`, {
+    ...options,
+    mode: 'cors',
+  })
     .then((response) => {
       if (!response.ok) {
         throw new Error(`HTTP error: The status is ${response.status}`);
@@ -18,10 +21,7 @@ const commonFetch = (url: string, options?: RequestInit) => {
 export const getFetch = (url: string, options?: RequestInit) => {
   return commonFetch(url, {
     ...options,
-    mode: 'cors',
-    headers: {
-      // Authentication: `Bearer ${token}`,
-    },
+    headers: options?.headers,
   });
 };
 
@@ -31,9 +31,16 @@ export const postFetch = (url: string, param: Param, options?: RequestInit) => {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      // Authentication: `Bearer ${token}`,
+      ...options?.headers,
     },
-    mode: 'cors',
     body: JSON.stringify(param),
+  });
+};
+
+export const deleteFetch = (url: string, options?: RequestInit) => {
+  return commonFetch(url, {
+    ...options,
+    method: 'DELETE',
+    ...options?.headers,
   });
 };
