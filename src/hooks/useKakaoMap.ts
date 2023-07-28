@@ -5,7 +5,13 @@ import { useCallback, useRef } from 'react';
 import { addFavoritePlace, addFavoriteStation } from '@/api/favorite';
 import { getRealTimeStation } from '@/api/station';
 import { MARKER_END, MARKER_START } from '@/constants';
-import { addressAtom, locationAtom, mapAtom } from '@/store/atom';
+import {
+  addressAtom,
+  endMarkerAtom,
+  locationAtom,
+  mapAtom,
+  startMarkerAtom,
+} from '@/store/atom';
 import type { MoveToLocationParam, pointType } from '@/types/direction';
 import type { StationData } from '@/types/station';
 import { getButtonElement, getInfoWindowElement } from '@/utils/getElement';
@@ -17,9 +23,9 @@ export function useKakaoMap() {
   const map = useAtomValue(mapAtom);
   const [address, setAddress] = useAtom(addressAtom);
   const [location, setLocation] = useAtom(locationAtom);
+  const [startMarker, setStartMarker] = useAtom(startMarkerAtom);
+  const [endMarker, setEndMarker] = useAtom(endMarkerAtom);
   const [accessToken] = useLocalStorage('accessToken', null);
-  const startMarker = useRef<kakao.maps.Marker>();
-  const endMarker = useRef<kakao.maps.Marker>();
   const infoWindow = useRef<kakao.maps.InfoWindow | null>();
   const stationInfoWindows = useRef<kakao.maps.InfoWindow[]>([]);
 
@@ -44,14 +50,14 @@ export function useKakaoMap() {
       });
 
       if (pointType === 'start') {
-        startMarker.current?.setMap(null);
-        startMarker.current = marker;
+        startMarker?.setMap(null);
+        setStartMarker(marker);
       }
       if (pointType === 'end') {
-        endMarker.current?.setMap(null);
-        endMarker.current = marker;
+        endMarker?.setMap(null);
+        setEndMarker(marker);
       }
-
+      console.log(startMarker, endMarker);
       marker.setMap(map);
       map.panTo(locPosition);
     },
@@ -73,8 +79,8 @@ export function useKakaoMap() {
 
     const makeHandler = (pointType: pointType) => {
       return () => {
-        changeAddress(lat, lon, pointType);
         displayMarker(lat, lon, pointType);
+        changeAddress(lat, lon, pointType);
         closeInfoWindow();
         pointType === 'start' &&
           setLocation({ ...location, startLatitude: lat, startLongitude: lon });
@@ -230,7 +236,19 @@ export function useKakaoMap() {
       return;
     }
 
+    type === 'start'
+      ? setLocation({
+          ...location,
+          startLatitude: latitude,
+          startLongitude: longitude,
+        })
+      : setLocation({
+          ...location,
+          endLatitude: latitude,
+          endLongitude: longitude,
+        });
     displayMarker(latitude, longitude, type);
+    changeAddress(latitude, longitude, type);
   };
 
   return {

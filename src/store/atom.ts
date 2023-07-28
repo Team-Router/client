@@ -22,3 +22,6 @@ export const locationAtom = atom<{
 });
 
 export const pageTabAtom = atom<string>(ROUTES);
+
+export const startMarkerAtom = atom<kakao.maps.Marker | null>(null);
+export const endMarkerAtom = atom<kakao.maps.Marker | null>(null);
