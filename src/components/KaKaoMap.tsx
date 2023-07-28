@@ -13,7 +13,7 @@ import { PEDESTRIAN } from '@/constants';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { useKakaoMap } from '@/hooks/useKakaoMap';
 import { addressAtom, locationAtom, mapAtom } from '@/store/atom';
-import { LocalLocation, RoutingProfile } from '@/types/direction';
+import type { LocalLocation, RoutingProfile } from '@/types/direction';
 import { getResultOverlayElement } from '@/utils/getElement';
 
 export default function KakaoMap() {

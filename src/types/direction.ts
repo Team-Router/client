@@ -19,3 +19,10 @@ export interface PostDirectionResponse {
 export interface PostWalkDirectionResponse extends RoutingData {
   routingProfile: 'pedestrian';
 }
+
+export type pointType = 'start' | 'end';
+export interface MoveToLocationParam {
+  latitude: number;
+  longitude: number;
+  type: 'station' | pointType;
+}

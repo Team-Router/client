@@ -1,21 +1,23 @@
 import { useAtom, useAtomValue } from 'jotai';
+import { useRouter } from 'next/navigation';
 import { useCallback, useRef } from 'react';
 
+import { addFavoritePlace, addFavoriteStation } from '@/api/favorite';
 import { getRealTimeStation } from '@/api/station';
+import { MARKER_END, MARKER_START } from '@/constants';
 import { addressAtom, locationAtom, mapAtom } from '@/store/atom';
-import { getInfoWindowElement } from '@/utils/getElement';
+import type { MoveToLocationParam, pointType } from '@/types/direction';
+import type { StationData } from '@/types/station';
+import { getButtonElement, getInfoWindowElement } from '@/utils/getElement';
 
-type pointType = 'start' | 'end';
-
-const MARKER_START =
-  'https://github.com/Team-Router/client/assets/75886763/b1d697f6-e9d3-45a1-867f-37e2af12dc4b';
-const MARKER_END =
-  'https://github.com/Team-Router/client/assets/75886763/f32cd77f-ae9d-46e0-a659-a99215c64562';
+import { useLocalStorage } from './useLocalStorage';
 
 export function useKakaoMap() {
+  const router = useRouter();
   const map = useAtomValue(mapAtom);
   const [address, setAddress] = useAtom(addressAtom);
   const [location, setLocation] = useAtom(locationAtom);
+  const [accessToken] = useLocalStorage('accessToken', null);
   const startMarker = useRef<kakao.maps.Marker>();
   const endMarker = useRef<kakao.maps.Marker>();
   const infoWindow = useRef<kakao.maps.InfoWindow | null>();
@@ -40,7 +42,6 @@ export function useKakaoMap() {
         position: locPosition,
         image: markerImage,
       });
-      marker.setMap(map);
 
       if (pointType === 'start') {
         startMarker.current?.setMap(null);
@@ -51,6 +52,7 @@ export function useKakaoMap() {
         endMarker.current = marker;
       }
 
+      marker.setMap(map);
       map.panTo(locPosition);
     },
     [map]
@@ -81,9 +83,31 @@ export function useKakaoMap() {
       };
     };
 
+    const addFavoritePlaceHandler = () => {
+      if (!accessToken) {
+        window.alert('로그인 먼저 바랍니다.');
+        router.push('/oauth');
+        return;
+      }
+
+      const favoritePlaceName = window.prompt('무엇으로 저장하시겠습니까?');
+      if (!favoritePlaceName) {
+        return;
+      }
+
+      const param = {
+        name: favoritePlaceName,
+        longitude: lon,
+        latitude: lat,
+      };
+      addFavoritePlace(param, accessToken);
+      closeInfoWindow();
+    };
+
     const iwContent = getInfoWindowElement(
       makeHandler('start'),
-      makeHandler('end')
+      makeHandler('end'),
+      addFavoritePlaceHandler
     );
     const iwPosition = getPosition(lat, lon);
     const newInfowindow = new kakao.maps.InfoWindow({
@@ -143,6 +167,27 @@ export function useKakaoMap() {
 
     closeRealTimeStationInfoWindow();
 
+    const addFavoriteStationHandler = (stationId: string) => {
+      if (!accessToken) {
+        window.alert('로그인 먼저 바랍니다.');
+        router.push('/oauth');
+        return;
+      }
+      addFavoriteStation(stationId, accessToken);
+    };
+
+    const stationInfoWindowContent = (stationRealtime: StationData) => {
+      const $div = document.createElement('div');
+      $div.setAttribute('style', 'display: flex; padding:5px;');
+      $div.innerText = `대여 가능: ${stationRealtime.count}`;
+      $div.appendChild(
+        getButtonElement('+', () =>
+          addFavoriteStationHandler(stationRealtime.id)
+        )
+      );
+      return $div;
+    };
+
     const mapCenterLocation = map.getCenter();
     try {
       const { stationRealtimeResponses } = await getRealTimeStation({
@@ -161,13 +206,31 @@ export function useKakaoMap() {
                 stationRealtime.latitude,
                 stationRealtime.longitude
               ),
-              content: `<div style="display: flex; padding:5px;">대여 가능: ${stationRealtime.count}</div>`,
+              content: stationInfoWindowContent(stationRealtime),
             })
         )
       );
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const moveToLocation = ({
+    latitude,
+    longitude,
+    type,
+  }: MoveToLocationParam) => {
+    if (!map) {
+      return;
+    }
+
+    const locPosition = getPosition(latitude, longitude);
+    if (type === 'station') {
+      map.panTo(locPosition);
+      return;
+    }
+
+    displayMarker(latitude, longitude, type);
   };
 
   return {
@@ -179,5 +242,6 @@ export function useKakaoMap() {
     changeAddressWithGeocoder,
     displayRealTimeStation,
     closeRealTimeStationInfoWindow,
+    moveToLocation,
   };
 }

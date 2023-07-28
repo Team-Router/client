@@ -1,5 +1,7 @@
 import { atom } from 'jotai';
 
+import { ROUTES } from '@/constants';
+
 export const mapAtom = atom<kakao.maps.Map | null>(null);
 
 export const addressAtom = atom<{ start: string; end: string }>({
@@ -18,3 +20,5 @@ export const locationAtom = atom<{
   endLatitude: 33.450701,
   endLongitude: 126.570667,
 });
+
+export const pageTabAtom = atom<string>(ROUTES);
