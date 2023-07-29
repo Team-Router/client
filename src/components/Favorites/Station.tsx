@@ -13,7 +13,7 @@ import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
 import { getFavoriteAllStation } from '@/api/favorite';
-import { ROUTES } from '@/constants';
+import { ROUTES, STATION } from '@/constants';
 import { useKakaoMap } from '@/hooks/useKakaoMap';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { pageTabAtom } from '@/store/atom';
@@ -47,7 +47,7 @@ export default function Station() {
         }}
       >
         <Link href={'/oauth'}>
-          <Button>로그인 먼저 바랍니다.</Button>
+          <Button>로그인하러 가기</Button>
         </Link>
       </div>
     );
@@ -74,7 +74,7 @@ export default function Station() {
 
   const favoriteStationClickHandler = (latitude: number, longitude: number) => {
     setTabValue(ROUTES);
-    moveToLocation({ latitude, longitude, type: 'station' });
+    moveToLocation({ latitude, longitude, type: STATION });
   };
 
   return (

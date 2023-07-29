@@ -4,7 +4,7 @@ import { useCallback, useRef } from 'react';
 
 import { addFavoritePlace, addFavoriteStation } from '@/api/favorite';
 import { getRealTimeStation } from '@/api/station';
-import { MARKER_END, MARKER_START } from '@/constants';
+import { END, MARKER_END, MARKER_START, START, STATION } from '@/constants';
 import {
   addressAtom,
   endMarkerAtom,
@@ -39,7 +39,7 @@ export function useKakaoMap() {
         return;
       }
 
-      const imageSrc = pointType === 'start' ? MARKER_START : MARKER_END;
+      const imageSrc = pointType === START ? MARKER_START : MARKER_END;
       const imageSize = new kakao.maps.Size(42, 42);
       const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize);
 
@@ -49,11 +49,11 @@ export function useKakaoMap() {
         image: markerImage,
       });
 
-      if (pointType === 'start') {
+      if (pointType === START) {
         startMarker?.setMap(null);
         setStartMarker(marker);
       }
-      if (pointType === 'end') {
+      if (pointType === END) {
         endMarker?.setMap(null);
         setEndMarker(marker);
       }
@@ -82,9 +82,9 @@ export function useKakaoMap() {
         displayMarker(lat, lon, pointType);
         changeAddress(lat, lon, pointType);
         closeInfoWindow();
-        pointType === 'start' &&
+        pointType === START &&
           setLocation({ ...location, startLatitude: lat, startLongitude: lon });
-        pointType === 'end' &&
+        pointType === END &&
           setLocation({ ...location, endLatitude: lat, endLongitude: lon });
       };
     };
@@ -111,8 +111,8 @@ export function useKakaoMap() {
     };
 
     const iwContent = getInfoWindowElement(
-      makeHandler('start'),
-      makeHandler('end'),
+      makeHandler(START),
+      makeHandler(END),
       addFavoritePlaceHandler
     );
     const iwPosition = getPosition(lat, lon);
@@ -129,8 +129,8 @@ export function useKakaoMap() {
     const callback = (result: any, status: kakao.maps.services.Status) => {
       if (status === kakao.maps.services.Status.OK) {
         const newAddress = result[0].address.address_name;
-        pointType === 'start' && setAddress({ ...address, start: newAddress });
-        pointType === 'end' && setAddress({ ...address, end: newAddress });
+        pointType === START && setAddress({ ...address, start: newAddress });
+        pointType === END && setAddress({ ...address, end: newAddress });
       } else {
         alert('현재 위치의 주소를 가져올 수 없습니다.');
       }
@@ -231,22 +231,25 @@ export function useKakaoMap() {
     }
 
     const locPosition = getPosition(latitude, longitude);
-    if (type === 'station') {
+    if (type === STATION) {
       map.panTo(locPosition);
       return;
     }
 
-    type === 'start'
-      ? setLocation({
-          ...location,
-          startLatitude: latitude,
-          startLongitude: longitude,
-        })
-      : setLocation({
-          ...location,
-          endLatitude: latitude,
-          endLongitude: longitude,
-        });
+    if (type === START) {
+      setLocation({
+        ...location,
+        startLatitude: latitude,
+        startLongitude: longitude,
+      });
+    }
+    if (type === END) {
+      setLocation({
+        ...location,
+        endLatitude: latitude,
+        endLongitude: longitude,
+      });
+    }
     displayMarker(latitude, longitude, type);
     changeAddress(latitude, longitude, type);
   };

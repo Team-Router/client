@@ -9,7 +9,7 @@ import {
   getDirectionBySelectedLocation,
   getWalkDirectionBySelectedLocation,
 } from '@/api/direction';
-import { PEDESTRIAN } from '@/constants';
+import { PEDESTRIAN, START } from '@/constants';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { useKakaoMap } from '@/hooks/useKakaoMap';
 import { addressAtom, locationAtom, mapAtom } from '@/store/atom';
@@ -36,7 +36,7 @@ export default function KakaoMap() {
   const { initPosition } = useGeolocation();
 
   useEffect(() => {
-    displayMarker(location.startLatitude, location.startLongitude, 'start');
+    displayMarker(location.startLatitude, location.startLongitude, START);
   }, [location.startLatitude, location.startLongitude, displayMarker]);
 
   useEffect(() => {

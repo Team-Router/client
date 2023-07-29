@@ -8,6 +8,9 @@ export const PLACE = 'place';
 export const ROUTES = 'routes';
 export const FAVORITE = 'favorite';
 
+export const START = 'start';
+export const END = 'end';
+
 export const MARKER_START =
   'https://github.com/Team-Router/client/assets/75886763/b1d697f6-e9d3-45a1-867f-37e2af12dc4b';
 export const MARKER_END =

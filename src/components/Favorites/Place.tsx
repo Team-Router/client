@@ -15,7 +15,7 @@ import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
 import { getAllFavoritePlace } from '@/api/favorite';
-import { ROUTES } from '@/constants';
+import { END, ROUTES, START } from '@/constants';
 import { useKakaoMap } from '@/hooks/useKakaoMap';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { pageTabAtom } from '@/store/atom';
@@ -50,7 +50,7 @@ export default function Place() {
         }}
       >
         <Link href={'/oauth'}>
-          <Button>로그인 먼저 바랍니다.</Button>
+          <Button>로그인하러 가기</Button>
         </Link>
       </div>
     );
@@ -77,14 +77,14 @@ export default function Place() {
   };
 
   const favoritePlackClickHandler = (latitude: number, longitude: number) => {
-    const param: MoveToLocationParam = { latitude, longitude, type: 'start' };
+    const param: MoveToLocationParam = { latitude, longitude, type: START };
     const isStart = window.confirm('출발지로 설정할까요?');
     if (!isStart) {
       const isEnd = window.confirm('도착지로 설정할까요?');
       if (!isEnd) {
         return;
       }
-      param.type = 'end';
+      param.type = END;
     }
     setTabValue(ROUTES);
     moveToLocation(param);
