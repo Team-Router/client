@@ -5,13 +5,7 @@ import { useCallback, useRef } from 'react';
 import { addFavoritePlace, addFavoriteStation } from '@/api/favorite';
 import { getRealTimeStation } from '@/api/station';
 import { END, MARKER_END, MARKER_START, START, STATION } from '@/constants';
-import {
-  addressAtom,
-  endMarkerAtom,
-  locationAtom,
-  mapAtom,
-  startMarkerAtom,
-} from '@/store/atom';
+import { addressAtom, locationAtom, mapAtom } from '@/store/atom';
 import type { MoveToLocationParam, pointType } from '@/types/direction';
 import type { StationData } from '@/types/station';
 import { getButtonElement, getInfoWindowElement } from '@/utils/getElement';
@@ -23,8 +17,8 @@ export function useKakaoMap() {
   const map = useAtomValue(mapAtom);
   const [address, setAddress] = useAtom(addressAtom);
   const [location, setLocation] = useAtom(locationAtom);
-  const [startMarker, setStartMarker] = useAtom(startMarkerAtom);
-  const [endMarker, setEndMarker] = useAtom(endMarkerAtom);
+  const startMarker = useRef<kakao.maps.Marker>();
+  const endMarker = useRef<kakao.maps.Marker>();
   const [accessToken] = useLocalStorage('accessToken', null);
   const infoWindow = useRef<kakao.maps.InfoWindow | null>();
   const stationInfoWindows = useRef<kakao.maps.InfoWindow[]>([]);
@@ -50,12 +44,12 @@ export function useKakaoMap() {
       });
 
       if (pointType === START) {
-        startMarker?.setMap(null);
-        setStartMarker(marker);
+        startMarker.current?.setMap(null);
+        startMarker.current = marker;
       }
       if (pointType === END) {
-        endMarker?.setMap(null);
-        setEndMarker(marker);
+        endMarker.current?.setMap(null);
+        endMarker.current = marker;
       }
       console.log(startMarker, endMarker);
       marker.setMap(map);

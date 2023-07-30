@@ -1,6 +1,7 @@
 import { atom } from 'jotai';
 
 import { ROUTES } from '@/constants';
+import { MoveToLocationParam } from '@/types/direction';
 
 export const mapAtom = atom<kakao.maps.Map | null>(null);
 
@@ -25,3 +26,7 @@ export const pageTabAtom = atom<string>(ROUTES);
 
 export const startMarkerAtom = atom<kakao.maps.Marker | null>(null);
 export const endMarkerAtom = atom<kakao.maps.Marker | null>(null);
+
+export const moveToLocationGlobalParamAtom = atom<Partial<MoveToLocationParam>>(
+  {}
+);

@@ -18,13 +18,16 @@ import { getAllFavoritePlace } from '@/api/favorite';
 import { END, ROUTES, START } from '@/constants';
 import { useKakaoMap } from '@/hooks/useKakaoMap';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { pageTabAtom } from '@/store/atom';
+import { moveToLocationGlobalParamAtom, pageTabAtom } from '@/store/atom';
 import type { MoveToLocationParam } from '@/types/direction';
 import type { Place } from '@/types/favorite';
 
 export default function Place() {
   const setTabValue = useSetAtom(pageTabAtom);
-  const { changeAddressWithGeocoder, moveToLocation } = useKakaoMap();
+  const setMoveToLocationGlobalParam = useSetAtom(
+    moveToLocationGlobalParamAtom
+  );
+  const { changeAddressWithGeocoder } = useKakaoMap();
   const [favoritePlaces, setFavoritePlaces] = useState<Place[]>([]);
   const [accessToken] = useLocalStorage('accessToken', null);
 
@@ -87,7 +90,7 @@ export default function Place() {
       param.type = END;
     }
     setTabValue(ROUTES);
-    moveToLocation(param);
+    setMoveToLocationGlobalParam(param);
   };
 
   return (

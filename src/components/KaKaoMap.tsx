@@ -12,13 +12,19 @@ import {
 import { PEDESTRIAN, START } from '@/constants';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { useKakaoMap } from '@/hooks/useKakaoMap';
-import { addressAtom, locationAtom, mapAtom } from '@/store/atom';
+import {
+  addressAtom,
+  locationAtom,
+  mapAtom,
+  moveToLocationGlobalParamAtom,
+} from '@/store/atom';
 import type { LocalLocation, RoutingProfile } from '@/types/direction';
 import { getResultOverlayElement } from '@/utils/getElement';
 
 export default function KakaoMap() {
   const address = useAtomValue(addressAtom);
   const location = useAtomValue(locationAtom);
+  const moveToLocationGlobalParam = useAtomValue(moveToLocationGlobalParamAtom);
   const [map, setMap] = useAtom(mapAtom);
   const mapRef = useRef<HTMLDivElement>(null);
   const polylines = useRef<kakao.maps.Polyline[]>([]);
@@ -32,12 +38,20 @@ export default function KakaoMap() {
     getPosition,
     displayRealTimeStation,
     closeRealTimeStationInfoWindow,
+    moveToLocation,
   } = useKakaoMap();
   const { initPosition } = useGeolocation();
 
   useEffect(() => {
     displayMarker(location.startLatitude, location.startLongitude, START);
   }, [location.startLatitude, location.startLongitude, displayMarker]);
+
+  useEffect(() => {
+    const { latitude, longitude, type } = moveToLocationGlobalParam;
+    if (latitude && longitude && type) {
+      moveToLocation({ latitude, longitude, type });
+    }
+  }, [moveToLocationGlobalParam]);
 
   useEffect(() => {
     if (!map) {

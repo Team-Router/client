@@ -21,6 +21,7 @@ export interface PostWalkDirectionResponse extends RoutingData {
 }
 
 export type pointType = 'start' | 'end';
+
 export interface MoveToLocationParam {
   latitude: number;
   longitude: number;
