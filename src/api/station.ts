@@ -1,4 +1,4 @@
-import { StationParam, StationResponse } from '@/types/station';
+import type { StationParam, StationResponse } from '@/types/station';
 
 import { postFetch } from './common';
 

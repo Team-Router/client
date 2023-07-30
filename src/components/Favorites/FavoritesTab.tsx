@@ -18,7 +18,7 @@ export default function FavoritesTab() {
   };
 
   return (
-    <>
+    <div style={{ width: '100%', height: '100%', backgroundColor: 'white' }}>
       <Tabs
         value={tabValue}
         onChange={handleTabChange}
@@ -30,6 +30,6 @@ export default function FavoritesTab() {
       </Tabs>
       {tabValue === STATION && <Station />}
       {tabValue === PLACE && <Place />}
-    </>
+    </div>
   );
 }

@@ -3,7 +3,7 @@ import type { RoutingProfile } from '@/types/direction';
 type handler = () => void;
 
 // infoWindowElement
-const getButtonElement = (text: string, handler: handler) => {
+export const getButtonElement = (text: string, handler: handler) => {
   const $button = document.createElement('button');
   $button.innerText = text;
   $button.addEventListener('click', handler);
@@ -12,11 +12,13 @@ const getButtonElement = (text: string, handler: handler) => {
 
 export const getInfoWindowElement = (
   startHandler: handler,
-  endHandler: handler
+  endHandler: handler,
+  addHandler: handler
 ) => {
   const $div = document.createElement('div');
   $div.appendChild(getButtonElement('출발', startHandler));
   $div.appendChild(getButtonElement('도착', endHandler));
+  $div.appendChild(getButtonElement('+', addHandler));
   return $div;
 };
 

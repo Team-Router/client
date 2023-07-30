@@ -1,4 +1,4 @@
-interface StationData {
+export interface StationData {
   name: string;
   count: number;
   latitude: number;
