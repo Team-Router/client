@@ -1,5 +1,6 @@
 'use client';
 import DirectionsBikeIcon from '@mui/icons-material/DirectionsBike';
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import {
   Avatar,
   Button,
@@ -35,24 +36,6 @@ export default function Station() {
     }
   }, []);
 
-  if (!accessToken) {
-    return (
-      <div
-        style={{
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
-        <Link href={'/oauth'}>
-          <Button>로그인하러 가기</Button>
-        </Link>
-      </div>
-    );
-  }
-
   const getFavoriteStations = async () => {
     if (!accessToken) {
       return;
@@ -76,6 +59,42 @@ export default function Station() {
     setTabValue(ROUTES);
     moveToLocation({ latitude, longitude, type: STATION });
   };
+
+  if (!accessToken) {
+    return (
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <Link href={'/oauth'}>
+          <Button>로그인하러 가기</Button>
+        </Link>
+      </div>
+    );
+  }
+
+  if (favoriteStation.length) {
+    return (
+      <List>
+        <ListItem
+          onClick={() => setTabValue(ROUTES)}
+          style={{ cursor: 'pointer' }}
+        >
+          <ListItemAvatar>
+            <Avatar>
+              <PlaylistAddIcon />
+            </Avatar>
+          </ListItemAvatar>
+          <ListItemText primary={'즐겨찾기 대여소를 추가해주세요.'} />
+        </ListItem>
+      </List>
+    );
+  }
 
   return (
     <List>

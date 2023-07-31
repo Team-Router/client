@@ -106,7 +106,7 @@ export default function Place() {
               <PlaylistAddIcon />
             </Avatar>
           </ListItemAvatar>
-          <ListItemText primary={'즐겨찾기를 추가해주세요.'} />
+          <ListItemText primary={'즐겨찾기 장소를 추가해주세요.'} />
         </ListItem>
       </List>
     );
