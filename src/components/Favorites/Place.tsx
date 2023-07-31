@@ -1,5 +1,6 @@
 'use client';
 import BusinessIcon from '@mui/icons-material/Business';
+import DeleteIcon from '@mui/icons-material/Delete';
 import HomeIcon from '@mui/icons-material/Home';
 import MapsHomeWorkIcon from '@mui/icons-material/MapsHomeWork';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
@@ -10,6 +11,7 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  IconButton,
 } from '@mui/material';
 import { useSetAtom } from 'jotai';
 import Link from 'next/link';
@@ -112,6 +114,10 @@ export default function Place() {
     );
   }
 
+  const deleteFavoritePlace = (placeId: number) => {
+    console.log(placeId);
+  };
+
   return (
     <List>
       {favoritePlaces.map(
@@ -120,6 +126,15 @@ export default function Place() {
             key={`${name}-${id}-${index}`}
             style={{ cursor: 'pointer' }}
             onClick={() => favoritePlackClickHandler(latitude, longitude)}
+            secondaryAction={
+              <IconButton
+                edge="end"
+                aria-label="delete"
+                onClick={() => deleteFavoritePlace(id)}
+              >
+                <DeleteIcon />
+              </IconButton>
+            }
           >
             <ListItemAvatar>
               <Avatar>

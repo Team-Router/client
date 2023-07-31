@@ -1,4 +1,5 @@
 'use client';
+import DeleteIcon from '@mui/icons-material/Delete';
 import DirectionsBikeIcon from '@mui/icons-material/DirectionsBike';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import {
@@ -8,10 +9,11 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  IconButton,
 } from '@mui/material';
 import { useSetAtom } from 'jotai';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import React, { MouseEvent, useEffect, useState } from 'react';
 
 import { getFavoriteAllStation } from '@/api/favorite';
 import { ROUTES, STATION } from '@/constants';
@@ -60,6 +62,11 @@ export default function Station() {
     moveToLocation({ latitude, longitude, type: STATION });
   };
 
+  const deleteFavoriteStation = (stationId: string) => {
+    // console.log(e);
+    console.log(stationId);
+  };
+
   if (!accessToken) {
     return (
       <div
@@ -78,7 +85,7 @@ export default function Station() {
     );
   }
 
-  if (favoriteStation.length) {
+  if (!favoriteStation.length) {
     return (
       <List>
         <ListItem
@@ -104,6 +111,15 @@ export default function Station() {
             key={`${id}-${index}`}
             style={{ cursor: 'pointer' }}
             onClick={() => favoriteStationClickHandler(latitude, longitude)}
+            secondaryAction={
+              <IconButton
+                edge="end"
+                aria-label="delete"
+                onClick={() => deleteFavoriteStation(id)}
+              >
+                <DeleteIcon />
+              </IconButton>
+            }
           >
             <ListItemAvatar>
               <Avatar>
