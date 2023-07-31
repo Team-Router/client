@@ -12,6 +12,7 @@ import {
   ListItemAvatar,
   ListItemText,
   IconButton,
+  Snackbar,
 } from '@mui/material';
 import { useSetAtom } from 'jotai';
 import Link from 'next/link';
@@ -33,6 +34,7 @@ export default function Place() {
   const { changeAddressWithGeocoder } = useKakaoMap();
   const [favoritePlaces, setFavoritePlaces] = useState<Place[]>([]);
   const [accessToken] = useLocalStorage('accessToken', null);
+  const [isOpenedToast, setIsOpenedToast] = useState(false);
 
   useEffect(() => {
     try {
@@ -78,7 +80,11 @@ export default function Place() {
     setMoveToLocationGlobalParam(param);
   };
 
-  const handleDeleteFavoritePlace = async (placeId: number) => {
+  const handleDeleteFavoritePlace = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    placeId: number
+  ) => {
+    e.preventDefault();
     await deleteFavoritePlace(placeId, accessToken);
   };
 
@@ -119,34 +125,41 @@ export default function Place() {
   }
 
   return (
-    <List>
-      {favoritePlaces.map(
-        ({ id, name, address, latitude, longitude }, index) => (
-          <ListItem
-            key={`${name}-${id}-${index}`}
-            style={{ cursor: 'pointer' }}
-            onClick={() => favoritePlackClickHandler(latitude, longitude)}
-            secondaryAction={
-              <IconButton
-                edge="end"
-                aria-label="delete"
-                onClick={() => handleDeleteFavoritePlace(id)}
-              >
-                <DeleteIcon />
-              </IconButton>
-            }
-          >
-            <ListItemAvatar>
-              <Avatar>
-                {name === 'HOME' && <HomeIcon />}
-                {name === 'OFFICE' && <BusinessIcon />}
-                {name === 'NORMAL' && <MapsHomeWorkIcon />}
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText primary={address} />
-          </ListItem>
-        )
-      )}
-    </List>
+    <>
+      <List>
+        {favoritePlaces.map(
+          ({ id, name, address, latitude, longitude }, index) => (
+            <ListItem
+              key={`${name}-${id}-${index}`}
+              style={{ cursor: 'pointer' }}
+              onClick={() => favoritePlackClickHandler(latitude, longitude)}
+              secondaryAction={
+                <IconButton
+                  edge="end"
+                  aria-label="delete"
+                  onClick={(e) => handleDeleteFavoritePlace(e, id)}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              }
+            >
+              <ListItemAvatar>
+                <Avatar>
+                  {name === 'HOME' && <HomeIcon />}
+                  {name === 'OFFICE' && <BusinessIcon />}
+                  {name === 'NORMAL' && <MapsHomeWorkIcon />}
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText primary={address} />
+            </ListItem>
+          )
+        )}
+      </List>
+      <Snackbar
+        open={isOpenedToast}
+        onClose={() => setIsOpenedToast(false)}
+        message="즐겨찾기를 삭제했습니다."
+      />
+    </>
   );
 }
