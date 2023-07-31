@@ -2,6 +2,7 @@
 import BusinessIcon from '@mui/icons-material/Business';
 import HomeIcon from '@mui/icons-material/Home';
 import MapsHomeWorkIcon from '@mui/icons-material/MapsHomeWork';
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import {
   Avatar,
   Button,
@@ -41,24 +42,6 @@ export default function Place() {
     }
   }, []);
 
-  if (!accessToken) {
-    return (
-      <div
-        style={{
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
-        <Link href={'/oauth'}>
-          <Button>로그인하러 가기</Button>
-        </Link>
-      </div>
-    );
-  }
-
   const getFavoritePlaces = async () => {
     if (!accessToken) {
       return;
@@ -92,6 +75,42 @@ export default function Place() {
     setTabValue(ROUTES);
     setMoveToLocationGlobalParam(param);
   };
+
+  if (!accessToken) {
+    return (
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <Link href={'/oauth'}>
+          <Button>로그인하러 가기</Button>
+        </Link>
+      </div>
+    );
+  }
+
+  if (!favoritePlaces.length) {
+    return (
+      <List>
+        <ListItem
+          onClick={() => setTabValue(ROUTES)}
+          style={{ cursor: 'pointer' }}
+        >
+          <ListItemAvatar>
+            <Avatar>
+              <PlaylistAddIcon />
+            </Avatar>
+          </ListItemAvatar>
+          <ListItemText primary={'즐겨찾기를 추가해주세요.'} />
+        </ListItem>
+      </List>
+    );
+  }
 
   return (
     <List>
