@@ -13,9 +13,9 @@ import {
 } from '@mui/material';
 import { useSetAtom } from 'jotai';
 import Link from 'next/link';
-import React, { MouseEvent, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-import { getFavoriteAllStation } from '@/api/favorite';
+import { deleteFavoriteStation, getFavoriteAllStation } from '@/api/favorite';
 import { ROUTES, STATION } from '@/constants';
 import { useKakaoMap } from '@/hooks/useKakaoMap';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
@@ -62,9 +62,8 @@ export default function Station() {
     moveToLocation({ latitude, longitude, type: STATION });
   };
 
-  const deleteFavoriteStation = (stationId: string) => {
-    // console.log(e);
-    console.log(stationId);
+  const handleDeleteFavoriteStation = async (stationId: string) => {
+    await deleteFavoriteStation(stationId, accessToken);
   };
 
   if (!accessToken) {
@@ -115,7 +114,7 @@ export default function Station() {
               <IconButton
                 edge="end"
                 aria-label="delete"
-                onClick={() => deleteFavoriteStation(id)}
+                onClick={() => handleDeleteFavoriteStation(id)}
               >
                 <DeleteIcon />
               </IconButton>

@@ -17,7 +17,7 @@ import { useSetAtom } from 'jotai';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
-import { getAllFavoritePlace } from '@/api/favorite';
+import { deleteFavoritePlace, getAllFavoritePlace } from '@/api/favorite';
 import { END, ROUTES, START } from '@/constants';
 import { useKakaoMap } from '@/hooks/useKakaoMap';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
@@ -78,6 +78,10 @@ export default function Place() {
     setMoveToLocationGlobalParam(param);
   };
 
+  const handleDeleteFavoritePlace = async (placeId: number) => {
+    await deleteFavoritePlace(placeId, accessToken);
+  };
+
   if (!accessToken) {
     return (
       <div
@@ -114,10 +118,6 @@ export default function Place() {
     );
   }
 
-  const deleteFavoritePlace = (placeId: number) => {
-    console.log(placeId);
-  };
-
   return (
     <List>
       {favoritePlaces.map(
@@ -130,7 +130,7 @@ export default function Place() {
               <IconButton
                 edge="end"
                 aria-label="delete"
-                onClick={() => deleteFavoritePlace(id)}
+                onClick={() => handleDeleteFavoritePlace(id)}
               >
                 <DeleteIcon />
               </IconButton>
