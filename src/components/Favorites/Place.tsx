@@ -12,9 +12,8 @@ import {
   ListItemAvatar,
   ListItemText,
   IconButton,
-  Snackbar,
 } from '@mui/material';
-import { useSetAtom } from 'jotai';
+import { SetStateAction, useSetAtom } from 'jotai';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
@@ -26,6 +25,8 @@ import { moveToLocationGlobalParamAtom, pageTabAtom } from '@/store/atom';
 import type { MoveToLocationParam } from '@/types/direction';
 import type { Place } from '@/types/favorite';
 
+import AlertDialog from '../AlertDialog';
+
 export default function Place() {
   const setTabValue = useSetAtom(pageTabAtom);
   const setMoveToLocationGlobalParam = useSetAtom(
@@ -34,7 +35,7 @@ export default function Place() {
   const { changeAddressWithGeocoder } = useKakaoMap();
   const [favoritePlaces, setFavoritePlaces] = useState<Place[]>([]);
   const [accessToken] = useLocalStorage('accessToken', null);
-  const [isOpenedToast, setIsOpenedToast] = useState(false);
+  const [isOpenedAlert, setIsOpenedAlert] = useState(false);
 
   useEffect(() => {
     try {
@@ -80,11 +81,14 @@ export default function Place() {
     setMoveToLocationGlobalParam(param);
   };
 
-  const handleDeleteFavoritePlace = async (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    placeId: number
+  const handleClickDeleteFavoritePlaceButton = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
-    e.preventDefault();
+    e.stopPropagation();
+    setIsOpenedAlert(true);
+  };
+
+  const handleDeleteFavoritePlace = async (placeId: number) => {
     await deleteFavoritePlace(placeId, accessToken);
   };
 
@@ -129,37 +133,43 @@ export default function Place() {
       <List>
         {favoritePlaces.map(
           ({ id, name, address, latitude, longitude }, index) => (
-            <ListItem
-              key={`${name}-${id}-${index}`}
-              style={{ cursor: 'pointer' }}
-              onClick={() => favoritePlackClickHandler(latitude, longitude)}
-              secondaryAction={
-                <IconButton
-                  edge="end"
-                  aria-label="delete"
-                  onClick={(e) => handleDeleteFavoritePlace(e, id)}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              }
-            >
-              <ListItemAvatar>
-                <Avatar>
-                  {name === 'HOME' && <HomeIcon />}
-                  {name === 'OFFICE' && <BusinessIcon />}
-                  {name === 'NORMAL' && <MapsHomeWorkIcon />}
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText primary={address} />
-            </ListItem>
+            <>
+              <ListItem
+                key={`${name}-${id}-${index}`}
+                style={{ cursor: 'pointer' }}
+                onClick={(e) =>
+                  favoritePlackClickHandler(e, latitude, longitude)
+                }
+                secondaryAction={
+                  <IconButton
+                    edge="end"
+                    aria-label="delete"
+                    onClick={(e) => handleClickDeleteFavoritePlaceButton(e)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                }
+              >
+                <ListItemAvatar>
+                  <Avatar>
+                    {name === 'HOME' && <HomeIcon />}
+                    {name === 'OFFICE' && <BusinessIcon />}
+                    {name === 'NORMAL' && <MapsHomeWorkIcon />}
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText primary={address} />
+              </ListItem>
+              <AlertDialog
+                isOpened={isOpenedAlert}
+                setIsOpened={setIsOpenedAlert}
+                title={'즐겨찾기 장소 삭제'}
+                description={`${address}를 즐겨찾기에서 삭제하시겠습니까?`}
+                onConfirm={() => handleDeleteFavoritePlace(id)}
+              />
+            </>
           )
         )}
       </List>
-      <Snackbar
-        open={isOpenedToast}
-        onClose={() => setIsOpenedToast(false)}
-        message="즐겨찾기를 삭제했습니다."
-      />
     </>
   );
 }

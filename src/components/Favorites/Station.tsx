@@ -23,13 +23,15 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { pageTabAtom } from '@/store/atom';
 import type { Station } from '@/types/favorite';
 
+import AlertDialog from '../AlertDialog';
+
 export default function Station() {
   const setTabValue = useSetAtom(pageTabAtom);
   const [accessToken] = useLocalStorage('accessToken', null);
   const { changeAddressWithGeocoder, moveToLocation } = useKakaoMap();
 
   const [favoriteStation, setFavoriteStation] = useState<Station[]>([]);
-  const [isOpenedToast, setIsOpenedToast] = useState(false);
+  const [isOpenedAlert, setIsOpenedAlert] = useState(false);
 
   useEffect(() => {
     try {
@@ -65,11 +67,14 @@ export default function Station() {
     moveToLocation({ latitude, longitude, type: STATION });
   };
 
-  const handleDeleteFavoriteStation = async (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    stationId: string
+  const handleClickDeleteFavoriteStation = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.preventDefault();
+    setIsOpenedAlert(true);
+  };
+
+  const handleDeleteFavoriteStation = async (stationId: string) => {
     await deleteFavoriteStation(stationId, accessToken);
   };
 
@@ -114,35 +119,39 @@ export default function Station() {
       <List>
         {favoriteStation.map(
           ({ name, id, address, latitude, longitude }, index) => (
-            <ListItem
-              key={`${id}-${index}`}
-              style={{ cursor: 'pointer' }}
-              onClick={() => favoriteStationClickHandler(latitude, longitude)}
-              secondaryAction={
-                <IconButton
-                  edge="end"
-                  aria-label="delete"
-                  onClick={(e) => handleDeleteFavoriteStation(e, id)}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              }
-            >
-              <ListItemAvatar>
-                <Avatar>
-                  <DirectionsBikeIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText primary={name} secondary={address} />
-            </ListItem>
+            <>
+              <ListItem
+                key={`${id}-${index}`}
+                style={{ cursor: 'pointer' }}
+                onClick={() => favoriteStationClickHandler(latitude, longitude)}
+                secondaryAction={
+                  <IconButton
+                    edge="end"
+                    aria-label="delete"
+                    onClick={(e) => handleClickDeleteFavoriteStation(e)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                }
+              >
+                <ListItemAvatar>
+                  <Avatar>
+                    <DirectionsBikeIcon />
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText primary={name} secondary={address} />
+              </ListItem>
+              <AlertDialog
+                isOpened={isOpenedAlert}
+                setIsOpened={setIsOpenedAlert}
+                title={'즐겨찾기 장소 삭제'}
+                description={`${address}를 즐겨찾기에서 삭제하시겠습니까?`}
+                onConfirm={() => handleDeleteFavoriteStation(id)}
+              />
+            </>
           )
         )}
       </List>
-      <Snackbar
-        open={isOpenedToast}
-        onClose={() => setIsOpenedToast(false)}
-        message="즐겨찾기를 삭제했습니다."
-      />
     </>
   );
 }
