@@ -10,11 +10,10 @@ import {
   ListItemAvatar,
   ListItemText,
   IconButton,
-  Snackbar,
 } from '@mui/material';
 import { useSetAtom } from 'jotai';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 
 import { deleteFavoriteStation, getFavoriteAllStation } from '@/api/favorite';
 import { ROUTES, STATION } from '@/constants';
@@ -32,6 +31,7 @@ export default function Station() {
 
   const [favoriteStation, setFavoriteStation] = useState<Station[]>([]);
   const [isOpenedAlert, setIsOpenedAlert] = useState(false);
+  const [deletedStationId, setDeletedStationId] = useState('');
 
   useEffect(() => {
     try {
@@ -47,6 +47,7 @@ export default function Station() {
     if (!accessToken) {
       return;
     }
+
     const stations = await getFavoriteAllStation(accessToken);
     setFavoriteStation(
       stations.favoriteStationResponses.map((station: Station) => {
@@ -62,20 +63,36 @@ export default function Station() {
     return address;
   };
 
-  const favoriteStationClickHandler = (latitude: number, longitude: number) => {
+  const favoriteStationClickHandler = (
+    e: React.MouseEvent<HTMLLIElement, MouseEvent>,
+    latitude: number,
+    longitude: number
+  ) => {
+    e.preventDefault();
     setTabValue(ROUTES);
     moveToLocation({ latitude, longitude, type: STATION });
   };
 
-  const handleClickDeleteFavoriteStation = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  const handleClickOpenDialog = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    stationId: string
   ) => {
-    e.preventDefault();
+    e.stopPropagation();
     setIsOpenedAlert(true);
+    setDeletedStationId(stationId);
   };
 
   const handleDeleteFavoriteStation = async (stationId: string) => {
-    await deleteFavoriteStation(stationId, accessToken);
+    try {
+      await deleteFavoriteStation(stationId, accessToken);
+      setDeletedStationId('');
+      setFavoriteStation(
+        favoriteStation.filter((station) => station.id !== stationId)
+      );
+      setIsOpenedAlert(false);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   if (!accessToken) {
@@ -119,16 +136,17 @@ export default function Station() {
       <List>
         {favoriteStation.map(
           ({ name, id, address, latitude, longitude }, index) => (
-            <>
+            <Fragment key={`${id}-${index}`}>
               <ListItem
-                key={`${id}-${index}`}
                 style={{ cursor: 'pointer' }}
-                onClick={() => favoriteStationClickHandler(latitude, longitude)}
+                onClick={(e) =>
+                  favoriteStationClickHandler(e, latitude, longitude)
+                }
                 secondaryAction={
                   <IconButton
                     edge="end"
                     aria-label="delete"
-                    onClick={(e) => handleClickDeleteFavoriteStation(e)}
+                    onClick={(e) => handleClickOpenDialog(e, id)}
                   >
                     <DeleteIcon />
                   </IconButton>
@@ -141,14 +159,16 @@ export default function Station() {
                 </ListItemAvatar>
                 <ListItemText primary={name} secondary={address} />
               </ListItem>
-              <AlertDialog
-                isOpened={isOpenedAlert}
-                setIsOpened={setIsOpenedAlert}
-                title={'즐겨찾기 장소 삭제'}
-                description={`${address}를 즐겨찾기에서 삭제하시겠습니까?`}
-                onConfirm={() => handleDeleteFavoriteStation(id)}
-              />
-            </>
+              {id === deletedStationId && (
+                <AlertDialog
+                  isOpened={isOpenedAlert}
+                  setIsOpened={setIsOpenedAlert}
+                  title={'삭제'}
+                  description={`다음 대여소를 즐겨찾기에서 삭제하시겠습니까?`}
+                  onConfirm={() => handleDeleteFavoriteStation(id)}
+                />
+              )}
+            </Fragment>
           )
         )}
       </List>

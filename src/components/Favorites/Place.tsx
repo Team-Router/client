@@ -13,9 +13,9 @@ import {
   ListItemText,
   IconButton,
 } from '@mui/material';
-import { SetStateAction, useSetAtom } from 'jotai';
+import { useSetAtom } from 'jotai';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 
 import { deleteFavoritePlace, getAllFavoritePlace } from '@/api/favorite';
 import { END, ROUTES, START } from '@/constants';
@@ -33,9 +33,11 @@ export default function Place() {
     moveToLocationGlobalParamAtom
   );
   const { changeAddressWithGeocoder } = useKakaoMap();
+
   const [favoritePlaces, setFavoritePlaces] = useState<Place[]>([]);
   const [accessToken] = useLocalStorage('accessToken', null);
   const [isOpenedAlert, setIsOpenedAlert] = useState(false);
+  const [deletedPlaceId, setDeletedPlaceId] = useState(0);
 
   useEffect(() => {
     try {
@@ -67,7 +69,12 @@ export default function Place() {
     return address;
   };
 
-  const favoritePlackClickHandler = (latitude: number, longitude: number) => {
+  const favoritePlackClickHandler = (
+    e: React.MouseEvent<HTMLLIElement, MouseEvent>,
+    latitude: number,
+    longitude: number
+  ) => {
+    e.preventDefault();
     const param: MoveToLocationParam = { latitude, longitude, type: START };
     const isStart = window.confirm('출발지로 설정할까요?');
     if (!isStart) {
@@ -81,15 +88,24 @@ export default function Place() {
     setMoveToLocationGlobalParam(param);
   };
 
-  const handleClickDeleteFavoritePlaceButton = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  const handleClickOpenDialog = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    placeId: number
   ) => {
     e.stopPropagation();
     setIsOpenedAlert(true);
+    setDeletedPlaceId(placeId);
   };
 
   const handleDeleteFavoritePlace = async (placeId: number) => {
-    await deleteFavoritePlace(placeId, accessToken);
+    try {
+      await deleteFavoritePlace(placeId, accessToken);
+      setDeletedPlaceId(0);
+      setFavoritePlaces(favoritePlaces.filter((place) => place.id !== placeId));
+      setIsOpenedAlert(false);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   if (!accessToken) {
@@ -133,9 +149,8 @@ export default function Place() {
       <List>
         {favoritePlaces.map(
           ({ id, name, address, latitude, longitude }, index) => (
-            <>
+            <Fragment key={`${name}-${id}-${index}`}>
               <ListItem
-                key={`${name}-${id}-${index}`}
                 style={{ cursor: 'pointer' }}
                 onClick={(e) =>
                   favoritePlackClickHandler(e, latitude, longitude)
@@ -144,7 +159,7 @@ export default function Place() {
                   <IconButton
                     edge="end"
                     aria-label="delete"
-                    onClick={(e) => handleClickDeleteFavoritePlaceButton(e)}
+                    onClick={(e) => handleClickOpenDialog(e, id)}
                   >
                     <DeleteIcon />
                   </IconButton>
@@ -159,14 +174,16 @@ export default function Place() {
                 </ListItemAvatar>
                 <ListItemText primary={address} />
               </ListItem>
-              <AlertDialog
-                isOpened={isOpenedAlert}
-                setIsOpened={setIsOpenedAlert}
-                title={'즐겨찾기 장소 삭제'}
-                description={`${address}를 즐겨찾기에서 삭제하시겠습니까?`}
-                onConfirm={() => handleDeleteFavoritePlace(id)}
-              />
-            </>
+              {id === deletedPlaceId && (
+                <AlertDialog
+                  isOpened={isOpenedAlert}
+                  setIsOpened={setIsOpenedAlert}
+                  title={'삭제'}
+                  description={`다음 장소를 즐겨찾기에서 삭제하시겠습니까?`}
+                  onConfirm={() => handleDeleteFavoritePlace(id)}
+                />
+              )}
+            </Fragment>
           )
         )}
       </List>
