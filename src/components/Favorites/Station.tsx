@@ -73,7 +73,7 @@ export default function Station() {
     moveToLocation({ latitude, longitude, type: STATION });
   };
 
-  const handleClickOpenDialog = (
+  const handleDeleteIconClick = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     stationId: string
   ) => {
@@ -82,7 +82,7 @@ export default function Station() {
     setDeletedStationId(stationId);
   };
 
-  const handleDeleteFavoriteStation = async (stationId: string) => {
+  const handleDeleteFavoriteStationConfirm = async (stationId: string) => {
     try {
       await deleteFavoriteStation(stationId, accessToken);
       setDeletedStationId('');
@@ -146,7 +146,7 @@ export default function Station() {
                   <IconButton
                     edge="end"
                     aria-label="delete"
-                    onClick={(e) => handleClickOpenDialog(e, id)}
+                    onClick={(e) => handleDeleteIconClick(e, id)}
                   >
                     <DeleteIcon />
                   </IconButton>
@@ -165,7 +165,7 @@ export default function Station() {
                   setIsOpened={setIsOpenedAlert}
                   title={'삭제'}
                   description={`다음 대여소를 즐겨찾기에서 삭제하시겠습니까?`}
-                  onConfirm={() => handleDeleteFavoriteStation(id)}
+                  onConfirm={() => handleDeleteFavoriteStationConfirm(id)}
                 />
               )}
             </Fragment>

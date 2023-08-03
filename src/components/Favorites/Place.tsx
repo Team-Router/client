@@ -69,7 +69,7 @@ export default function Place() {
     return address;
   };
 
-  const favoritePlackClickHandler = (
+  const favoritePlaceClickHandler = (
     e: React.MouseEvent<HTMLLIElement, MouseEvent>,
     latitude: number,
     longitude: number
@@ -88,7 +88,7 @@ export default function Place() {
     setMoveToLocationGlobalParam(param);
   };
 
-  const handleClickOpenDialog = (
+  const handleDeleteIconClick = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     placeId: number
   ) => {
@@ -97,7 +97,7 @@ export default function Place() {
     setDeletedPlaceId(placeId);
   };
 
-  const handleDeleteFavoritePlace = async (placeId: number) => {
+  const handleDeleteFavoritePlaceConfirm = async (placeId: number) => {
     try {
       await deleteFavoritePlace(placeId, accessToken);
       setDeletedPlaceId(0);
@@ -153,13 +153,13 @@ export default function Place() {
               <ListItem
                 style={{ cursor: 'pointer' }}
                 onClick={(e) =>
-                  favoritePlackClickHandler(e, latitude, longitude)
+                  favoritePlaceClickHandler(e, latitude, longitude)
                 }
                 secondaryAction={
                   <IconButton
                     edge="end"
                     aria-label="delete"
-                    onClick={(e) => handleClickOpenDialog(e, id)}
+                    onClick={(e) => handleDeleteIconClick(e, id)}
                   >
                     <DeleteIcon />
                   </IconButton>
@@ -180,7 +180,7 @@ export default function Place() {
                   setIsOpened={setIsOpenedAlert}
                   title={'삭제'}
                   description={`다음 장소를 즐겨찾기에서 삭제하시겠습니까?`}
-                  onConfirm={() => handleDeleteFavoritePlace(id)}
+                  onConfirm={() => handleDeleteFavoritePlaceConfirm(id)}
                 />
               )}
             </Fragment>
