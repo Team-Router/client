@@ -59,7 +59,7 @@ export const addFavoritePlace = (
   );
 };
 
-export const deleteFavoritePlace = (favoriteId: string, token: string) => {
+export const deleteFavoritePlace = (favoriteId: number, token: string) => {
   return deleteFetch(`/place?favoriteId=${favoriteId}`, {
     headers: {
       Authorization: `Bearer ${token}`,
