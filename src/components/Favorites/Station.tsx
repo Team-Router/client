@@ -49,6 +49,11 @@ export default function Station() {
     }
 
     const stations = await getFavoriteAllStation(accessToken);
+    if (!stations) {
+      setFavoriteStation([]);
+      return;
+    }
+
     setFavoriteStation(
       stations.favoriteStationResponses.map((station: Station) => {
         const { latitude, longitude } = station;

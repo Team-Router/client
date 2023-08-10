@@ -55,6 +55,11 @@ export default function Place() {
     }
 
     const stations = await getAllFavoritePlace(accessToken);
+    if (!stations) {
+      setFavoritePlaces([]);
+      return;
+    }
+
     setFavoritePlaces(
       stations.favoritePlaces.map((place: Place) => {
         const { latitude, longitude } = place;
